@@ -1,0 +1,19 @@
+{
+  "name": "hotel-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start:client": "make start_client",
+    "start:server": "make start_server",
+    "start": "make start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "workspaces": [
+    "src/lib/core",
+    "src/lib/server",
+    "src/lib/client"
+  ]
+}
