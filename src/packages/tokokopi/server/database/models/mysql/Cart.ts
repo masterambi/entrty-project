@@ -1,109 +1,59 @@
-// "use strict";
-// const { Model } = require("sequelize");
-// const { Product } = require("./index");
-// module.exports = (sequelize, DataTypes) => {
-//   class Cart extends Model {
-//     /**
-//      * Helper method for defining associations.
-//      * This method is not a part of Sequelize lifecycle.
-//      * The `models/index` file will call this method automatically.
-//      */
-//     static associate(models) {
-//       // define association here
-//       Cart.belongsTo(models.User, { foreignKey: "user_id" });
-//       Cart.belongsTo(models.Product, {
-//         foreignKey: "product_id",
-//         as: "product",
-//       });
-//     }
-//   }
-//   Cart.init(
-//     {
-//       quantity: {
-//         allowNull: false,
-//         type: DataTypes.INTEGER,
-//         validate: {
-//           notNull: {
-//             args: true,
-//             msg: "quantity is required",
-//           },
-//           notEmpty: {
-//             args: true,
-//             msg: "quantity is required",
-//           },
-//           min: {
-//             args: [1],
-//             msg: "quantity must be a positive integer",
-//           },
-//           isInt: {
-//             args: true,
-//             msg: "quantity must be a positive integer",
-//           },
-//         },
-//       },
-//       status: {
-//         allowNull: false,
-//         type: DataTypes.BOOLEAN,
-//         defaultValue: false,
-//         validate: {
-//           notNull: {
-//             args: true,
-//             msg: "status is required",
-//           },
-//           notEmpty: {
-//             args: true,
-//             msg: "status is required",
-//           },
-//         },
-//       },
-//       user_id: {
-//         allowNull: false,
-//         type: DataTypes.INTEGER,
-//         validate: {
-//           notNull: {
-//             args: true,
-//             msg: "user_id is required",
-//           },
-//           notEmpty: {
-//             args: true,
-//             msg: "user_id is required",
-//           },
-//         },
-//       },
-//       product_id: {
-//         allowNull: false,
-//         type: DataTypes.INTEGER,
-//         validate: {
-//           notNull: {
-//             args: true,
-//             msg: "product_id is required",
-//           },
-//           notEmpty: {
-//             args: true,
-//             msg: "product_id is required",
-//           },
-//         },
-//       },
-//     },
-//     {
-//       sequelize,
-//       modelName: "Cart",
-//     }
-//   );
+import {
+  AllowNull,
+  AutoIncrement,
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+} from "sequelize-typescript";
+import Product from "./Product";
+import { Optional } from "sequelize";
 
-//   Cart.afterUpdate(async (cart, options) => {
-//     if (cart.status === true) {
-//       try {
-//         const product = await sequelize.models.Product.findByPk(
-//           cart.product_id
-//         );
-//         product.stock -= cart.quantity;
-//         await product.save();
-//       } catch (err) {
-//         throw err;
-//       }
-//     }
-//   });
+export interface ICartAttributes {
+  id: number;
+  user_id: number;
+  product_id: number;
+  quantity: number;
+  created_at: Date;
+  updated_at: Date;
+}
 
-//   return Cart;
-// };
+export interface ICartCreationAttributes
+  extends Optional<ICartAttributes, "id" | "created_at" | "updated_at"> {}
+
+@Table({
+  tableName: "carts",
+  modelName: "carts",
+  freezeTableName: true,
+  underscored: true,
+  timestamps: true,
+  createdAt: true,
+  updatedAt: true,
+})
+class Cart extends Model<ICartAttributes, ICartCreationAttributes> {
+  @AutoIncrement
+  @PrimaryKey
+  @Column(DataType.INTEGER.UNSIGNED)
+  declare id: number;
+
+  @AllowNull(false)
+  @Column(DataType.INTEGER.UNSIGNED)
+  declare user_id: number;
+
+  @AllowNull(false)
+  @ForeignKey(() => Product)
+  @Column(DataType.INTEGER.UNSIGNED)
+  declare product_id: number; // No direct property declaration, use `!` to indicate it's initialized
+
+  @AllowNull(false)
+  @Column(DataType.INTEGER.UNSIGNED)
+  declare quantity: number; // No direct property declaration, use `!` to indicate it's initialized
+
+  @BelongsTo(() => Product, "product_id")
+  declare product: Product; // The relation is defined here
+}
+
+export default Cart;

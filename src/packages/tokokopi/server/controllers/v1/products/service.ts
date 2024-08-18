@@ -2,14 +2,18 @@ import logger from "~/lib/core/helpers/logger";
 import Product, {
   IProductCreationAttributes,
 } from "~/packages/tokokopi/server/database/models/mysql/Product";
+import { Op } from "sequelize";
 
 interface IGetProductListParams {
   limit: number;
   offset: number;
 }
 interface IGetProductListReturn {
-  products: Product[];
-  total: number;
+  data?: {
+    products: Product[];
+    total: number;
+  };
+  error?: string;
 }
 
 export const getProductList = async (
@@ -19,21 +23,31 @@ export const getProductList = async (
     const { limit, offset } = params;
     logger.info({ limit, offset }, "Products Service - getProducts Params: ");
 
-    const products = await Product.findAndCountAll({ limit, offset });
+    const products = await Product.findAndCountAll({
+      where: {
+        stock: { [Op.gt]: 0 },
+      },
+      limit,
+      offset,
+    });
 
     logger.info(products.count, "Products Service - getProductList Data: ");
 
-    return { products: products.rows, total: products.count };
+    return { data: { products: products.rows, total: products.count } };
   } catch (err) {
     logger.error(err.message || err, "Products Service - getProducts Error: ");
-    throw err;
+    return { error: "general_error" };
   }
 };
 
 interface ICreateProductParams extends IProductCreationAttributes {}
+interface ICreateProductReturn {
+  data?: Product;
+  error?: "general_error";
+}
 export const createProduct = async (
   params: ICreateProductParams
-): Promise<Product> => {
+): Promise<ICreateProductReturn> => {
   try {
     const { name, description, price, stock, image_url } = params;
     logger.info(
@@ -49,13 +63,13 @@ export const createProduct = async (
       image_url,
     });
 
-    logger.info(product, "Products Service - createProduct Data: ");
-    return product;
+    logger.info(product.toJSON(), "Products Service - createProduct Data: ");
+    return { data: product };
   } catch (err) {
     logger.error(
       err.message || err,
       "Products Service - createProduct Error: "
     );
-    throw err;
+    return { error: "general_error" };
   }
 };

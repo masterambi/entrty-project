@@ -9,7 +9,7 @@ class ProductsController {
   @Get("")
   protected async getProductList(req: Request, res: Response) {
     try {
-      const data = await ProductService.getProductList({
+      const { data } = await ProductService.getProductList({
         limit: 10,
         offset: 0,
       });
@@ -35,13 +35,15 @@ class ProductsController {
     try {
       const { name, description, price, stock, image_url } = req.body;
 
-      const data = await ProductService.createProduct({
+      const { data, error } = await ProductService.createProduct({
         name,
         description,
         price,
         stock,
         image_url,
       });
+
+      if (error === "general_error") throw error;
 
       return res.apiSuccess<any>({
         status: 200,

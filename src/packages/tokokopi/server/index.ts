@@ -7,11 +7,10 @@ import models from "./database/models/mysql";
 
 (async () => {
   try {
-    logger.info(models, "MODELS");
     const db = await Connection.mysqlConnection(models);
     if (db) {
       await db.authenticate();
-      await db.sync();
+      await db.sync({ force: false });
     }
 
     const server = new ExpressServer({

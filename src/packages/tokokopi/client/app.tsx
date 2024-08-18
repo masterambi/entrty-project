@@ -1,20 +1,17 @@
-import React, { useState } from "react";
-import httpReq from "~/lib/core/helpers/httpReq";
+import React, { Suspense } from "react";
+import { Route, Routes } from "react-router";
+import ProductList from "../container/ProductList";
 
 type Props = {};
 
 const App = (props: Props) => {
-  const [message, setMessage] = useState("");
-  httpReq("/api/v1/users", { method: "GET" })
-    .then((data) => {
-      console.log(data);
-      setMessage(data.response.message);
-    })
-    .catch((data) => {
-      console.log(data);
-    });
-
-  return <div>{message}</div>;
+  return (
+    <Suspense fallback={<div></div>}>
+      <Routes>
+        <Route path="/" element={<ProductList />} />
+      </Routes>
+    </Suspense>
+  );
 };
 
 export default App;

@@ -25,39 +25,38 @@ export interface IProductCreationAttributes
 
 @Table({
   tableName: "products",
-  modelName: "products",
+  modelName: "product",
   freezeTableName: true,
   underscored: true,
   timestamps: true,
   createdAt: true,
   updatedAt: true,
-  deletedAt: true,
 })
 class Product extends Model<IProductAttributes, IProductCreationAttributes> {
   @AutoIncrement
   @PrimaryKey
   @Column(DataType.INTEGER.UNSIGNED)
-  id!: number;
+  declare id: number;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  name!: string;
+  declare name: string;
 
   @AllowNull(false)
   @Column(DataType.TEXT)
-  description!: string;
+  declare description: string;
 
   @AllowNull(false)
   @Column(DataType.DECIMAL(19, 0))
-  price!: number;
+  declare price: number;
 
   @AllowNull(false)
   @Column(DataType.INTEGER.UNSIGNED)
-  stock!: number;
+  declare stock: number;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  image_url!: string;
+  declare image_url: string;
 }
 
 export default Product;
