@@ -43,23 +43,6 @@ const Product = createModel<IRootModel>()({
       const responseJSON = await response.json();
       dispatch.product.setProductList(responseJSON.data.products);
     },
-    async addToCart({ id, quantity }: { id: number; quantity: number }) {
-      console.log("TRIGGERED");
-      const response = await fetch(`/api/v1/carts`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json", // Set the content type to JSON
-        },
-        body: JSON.stringify({
-          product_id: id,
-          quantity,
-        }),
-      });
-
-      const data = await response.json();
-
-      console.log(data);
-    },
     async goToPage(page: number) {
       dispatch.product.setCurrentPage(page);
     },

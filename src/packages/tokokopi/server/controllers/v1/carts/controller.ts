@@ -9,15 +9,25 @@ class CartsController {
   @Get("")
   protected async getCartsByUser(req: Request, res: Response) {
     try {
-      const { data } = await CatsService.getCartsByUser({
+      const response = await CatsService.getCartsByUser({
         user_id: 1,
       });
+
+      if (response.error === "general_error") {
+        throw response;
+      }
+
+      const { data } = response;
 
       return res.apiSuccess<any>({
         status: 200,
         message: "Success",
         code: EResponseCode.GET_DATA_SUCCESS,
-        data,
+        data: {
+          total_price: data?.totalPrice,
+          total_items: data?.totalItems,
+          cart_items: data?.cartItems,
+        },
       });
     } catch (e) {
       logger.error(e.message || e, "CartsController: getCartsByUser: ");
@@ -32,9 +42,41 @@ class CartsController {
   @Post("checkout")
   protected async checkout(req: Request, res: Response) {
     try {
-      const { data } = await CatsService.checkout({
+      const response = await CatsService.checkout({
         user_id: 1,
       });
+
+      const { error } = response;
+
+      if (error === "cart_empty") {
+        return res.apiError<any>({
+          status: 400,
+          message: "Cart is empty",
+          code: EResponseCode.CART_EMPTY,
+        });
+      }
+
+      if (error === "product_not_found") {
+        return res.apiError<any>({
+          status: 400,
+          message: "Product not found",
+          code: EResponseCode.PRODUCT_NOT_FOUND,
+        });
+      }
+
+      if (error === "stock_not_enough") {
+        return res.apiError<any>({
+          status: 400,
+          message: "Product not found",
+          code: EResponseCode.PRODUCT_STOCK_NOT_ENOUGH,
+        });
+      }
+
+      if (error === "general_error") {
+        throw response;
+      }
+
+      const { data } = response;
 
       return res.apiSuccess<any>({
         status: 201,
@@ -57,9 +99,7 @@ class CartsController {
     try {
       const { product_id, quantity } = req.body;
 
-      console.log(req.body);
-
-      const { data, error } = await CatsService.createCart({
+      const { data } = await CatsService.createCart({
         product_id: product_id,
         user_id: 1,
         quantity: quantity,

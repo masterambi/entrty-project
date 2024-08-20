@@ -58,7 +58,7 @@ interface IGetCartsByUserParams {
   user_id: number;
 }
 interface IGetCartsByUserReturn {
-  data?: Cart[];
+  data?: { cartItems: Cart[]; totalPrice: number; totalItems: number };
   error?: "general_error";
 }
 export const getCartsByUser = async (
@@ -78,7 +78,27 @@ export const getCartsByUser = async (
       },
     });
 
-    return { data: carts };
+    const total = carts.reduce(
+      (total, cart) => {
+        const tempTotalPrice = (total.totalPrice +=
+          cart.quantity * cart.product.price);
+        const tempTotalItem = (total.totalItems += cart.quantity);
+
+        return {
+          totalPrice: tempTotalPrice,
+          totalItems: tempTotalItem,
+        };
+      },
+      { totalPrice: 0, totalItems: 0 }
+    );
+
+    return {
+      data: {
+        cartItems: carts,
+        totalPrice: total.totalPrice,
+        totalItems: total.totalItems,
+      },
+    };
   } catch (err) {
     logger.error(err.message || err, "Carts Service - getCartsByUser Error: ");
     return { error: "general_error" };
@@ -122,7 +142,7 @@ export const updateCartQty = async (
 
     const updatedCart = await cart.save();
 
-    logger.info(updatedCart, "Carts Service - createCart Data: ");
+    logger.info(updatedCart.toJSON(), "Carts Service - createCart Data: ");
 
     return { data: updatedCart };
   } catch (err) {
@@ -203,9 +223,6 @@ export const checkout = async (
 
     const productUpdates: { id: number; stock: number }[] = [];
     for (const cart of carts) {
-      console.log(cart.product_id);
-      console.log(products);
-
       const product = products.find(
         (product) => product.id === cart.product_id
       );
@@ -220,8 +237,6 @@ export const checkout = async (
         return { error: "stock_not_enough" };
       }
 
-      console.log(product.stock, cart.quantity, "HEHE");
-
       product.stock -= cart.quantity;
 
       productUpdates.push({
@@ -229,8 +244,6 @@ export const checkout = async (
         stock: product.stock,
       });
     }
-
-    console.log(productUpdates);
 
     await Promise.all(
       productUpdates.map((update) =>

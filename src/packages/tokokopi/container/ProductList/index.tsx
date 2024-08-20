@@ -16,8 +16,7 @@ const ProductList: FC = (props: Props) => {
   );
 
   const handleAddToCart = (productId: number) => async () => {
-    console.log(productId);
-    await d.product.addToCart({ id: productId, quantity: 1 });
+    await d.cart.addToCartItem({ id: productId, quantity: 1 });
     console.log("move to cart page");
   };
 

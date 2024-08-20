@@ -13,7 +13,7 @@ interface IGetProductListReturn {
     products: Product[];
     total: number;
   };
-  error?: string;
+  error?: "general_error";
 }
 
 export const getProductList = async (
@@ -34,6 +34,39 @@ export const getProductList = async (
     logger.info(products.count, "Products Service - getProductList Data: ");
 
     return { data: { products: products.rows, total: products.count } };
+  } catch (err) {
+    logger.error(err.message || err, "Products Service - getProducts Error: ");
+    return { error: "general_error" };
+  }
+};
+
+interface IGetProductDetailsParams {
+  id: number;
+}
+interface IGetProductDetailsReturn {
+  data?: {
+    product: Product;
+  };
+  error?: "product_not_found" | "general_error";
+}
+export const getProductDetails = async (
+  params: IGetProductDetailsParams
+): Promise<IGetProductDetailsReturn> => {
+  try {
+    const { id } = params;
+    logger.info({ id }, "Product Service - getProductDetails: ");
+
+    const product = await Product.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!product) return { error: "product_not_found" };
+
+    logger.info(product, "Products Service - getProductDetails Data: ");
+
+    return { data: { product } };
   } catch (err) {
     logger.error(err.message || err, "Products Service - getProducts Error: ");
     return { error: "general_error" };

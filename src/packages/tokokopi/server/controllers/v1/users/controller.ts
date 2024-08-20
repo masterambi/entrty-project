@@ -5,7 +5,6 @@ import { Request, Response } from "express";
 class UsersController {
   @Get("")
   protected getTest(req: Request, res: Response) {
-    console.log("TESTTTTTTTTTT");
     return res.apiSuccess<null>({
       status: 200,
       message: "lala",

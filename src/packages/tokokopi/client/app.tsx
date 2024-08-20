@@ -1,6 +1,8 @@
-import React, { Suspense } from "react";
+import React, { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router";
-import ProductList from "../container/ProductList";
+
+const ProductList = lazy(() => import("../container/ProductList"));
+const Cart = lazy(() => import("../container/Cart"));
 
 type Props = {};
 
@@ -9,6 +11,7 @@ const App = (props: Props) => {
     <Suspense fallback={<div></div>}>
       <Routes>
         <Route path="/" element={<ProductList />} />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
     </Suspense>
   );

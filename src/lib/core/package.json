@@ -13,12 +13,14 @@
     "axios": "^1.7.4",
     "axios-retry": "^4.5.0",
     "dotenv": "^16.4.5",
+    "lodash.debounce": "^4.0.8",
     "moment-timezone": "^0.5.45",
     "pino": "^9.3.2",
     "pino-pretty": "^11.2.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
     "@vitejs/plugin-react-swc": "^3.7.0",
     "concurrently": "^8.2.2",
     "husky": "^9.1.4",
