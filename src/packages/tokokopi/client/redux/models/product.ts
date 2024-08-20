@@ -1,23 +1,16 @@
 // src/models/products.ts
 import { createModel } from "@rematch/core";
 import { IRootModel } from ".";
-
-export type TProduct = {
-  id: number;
-  name: string;
-  price: number;
-  stock: number;
-  image_url: string;
-};
+import { TGetProductListResponse } from "~/packages/tokokopi/server/controllers/v1/products/type";
+import httpReq from "~/lib/core/helpers/httpReq";
+import { EResponseCode } from "~/lib/core/constants";
 
 export interface IProductsState {
-  productList: TProduct[];
-  currentPage: number;
+  productList: TGetProductListResponse["data"]["products"];
 }
 
 const INITIAL_STATE: IProductsState = {
   productList: [],
-  currentPage: 1,
 };
 
 const Product = createModel<IRootModel>()({
@@ -39,12 +32,20 @@ const Product = createModel<IRootModel>()({
   },
   effects: (dispatch) => ({
     async fetchProductList() {
-      const response = await fetch(`/api/v1/products`);
-      const responseJSON = await response.json();
-      dispatch.product.setProductList(responseJSON.data.products);
-    },
-    async goToPage(page: number) {
-      dispatch.product.setCurrentPage(page);
+      try {
+        const { response } = await httpReq<TGetProductListResponse>(
+          `/api/v1/products`,
+          { method: "GET" }
+        );
+        if (response.data) {
+          dispatch.product.setProductList(response.data.products);
+        }
+      } catch (e) {
+        const error = e.response as ApiError<EResponseCode>;
+
+        // TODO: handle error
+        console.log(error);
+      }
     },
   }),
 });

@@ -41,7 +41,7 @@ export const getProductList = async (
 };
 
 interface IGetProductDetailsParams {
-  id: number;
+  productId: string;
 }
 interface IGetProductDetailsReturn {
   data?: {
@@ -53,12 +53,12 @@ export const getProductDetails = async (
   params: IGetProductDetailsParams
 ): Promise<IGetProductDetailsReturn> => {
   try {
-    const { id } = params;
-    logger.info({ id }, "Product Service - getProductDetails: ");
+    const { productId } = params;
+    logger.info({ productId }, "Product Service - getProductDetails: ");
 
     const product = await Product.findOne({
       where: {
-        id,
+        id: productId,
       },
     });
 
@@ -82,9 +82,9 @@ export const createProduct = async (
   params: ICreateProductParams
 ): Promise<ICreateProductReturn> => {
   try {
-    const { name, description, price, stock, image_url } = params;
+    const { name, description, price, stock, imageUrl } = params;
     logger.info(
-      { name, description, price, stock, image_url },
+      { name, description, price, stock, imageUrl },
       "Products Service - createProduct Params: "
     );
 
@@ -93,7 +93,7 @@ export const createProduct = async (
       description,
       price,
       stock,
-      image_url,
+      imageUrl,
     });
 
     logger.info(product.toJSON(), "Products Service - createProduct Data: ");

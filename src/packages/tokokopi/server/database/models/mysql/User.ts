@@ -6,15 +6,15 @@ export interface IUserAttributes {
   email: string;
   name: string;
   role: "customer" | "admin";
-  created_at: Date;
-  updated_at: Date;
-  deleted_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date;
 }
 
 export interface IUserCreationAttributes
   extends Optional<
     IUserAttributes,
-    "id" | "created_at" | "updated_at" | "deleted_at"
+    "id" | "createdAt" | "updatedAt" | "deletedAt"
   > {}
 
 class User extends Model<IUserAttributes, IUserCreationAttributes> {}

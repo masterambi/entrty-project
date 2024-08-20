@@ -1,36 +1,57 @@
-import { Controller, Delete, Get, Post, Put } from "@overnightjs/core";
+import {
+  Controller,
+  Delete,
+  Get,
+  Middleware,
+  Post,
+  Put,
+} from "@overnightjs/core";
 import { Request, Response } from "express";
 import * as CatsService from "./service";
 import { EResponseCode } from "~/lib/core/constants";
 import logger from "~/lib/core/helpers/logger";
+import {
+  createCartValidator,
+  deleteCartItemValidator,
+  updateCartItemQtyBodyValidator,
+  updateCartItemQtyParamsValidator,
+} from "./validator";
+
+import {
+  IResBodyCheckout,
+  IResBodyCreateCart,
+  IResBodyDeleteCartItem,
+  IResBodyGetCartItemsByUser,
+  IResBodyUpdateCartItemQty,
+  TReqBodyCreateCart,
+  TReqBodyUpdateCartItemQty,
+  TReqParamsDeleteCartItem,
+  TReqParamsUpdateCartItemQty,
+} from "./type";
 
 @Controller("carts")
 class CartsController {
   @Get("")
-  protected async getCartsByUser(req: Request, res: Response) {
+  protected async getCartItemsByUser(req: Request, res: Response) {
     try {
-      const response = await CatsService.getCartsByUser({
-        user_id: 1,
+      const response = await CatsService.getCartItemsByUser({
+        userId: 1,
       });
 
-      if (response.error === "general_error") {
+      const { data, error } = response;
+
+      if (error === "general_error" || !data) {
         throw response;
       }
 
-      const { data } = response;
-
-      return res.apiSuccess<any>({
+      return res.apiSuccess<IResBodyGetCartItemsByUser>({
         status: 200,
         message: "Success",
         code: EResponseCode.GET_DATA_SUCCESS,
-        data: {
-          total_price: data?.totalPrice,
-          total_items: data?.totalItems,
-          cart_items: data?.cartItems,
-        },
+        data,
       });
     } catch (e) {
-      logger.error(e.message || e, "CartsController: getCartsByUser: ");
+      logger.error(e.message || e, "CartsController: getCartItemsByUser: ");
       return res.apiError<EResponseCode>({
         status: 500,
         code: EResponseCode.GENERAL_ERROR,
@@ -43,10 +64,10 @@ class CartsController {
   protected async checkout(req: Request, res: Response) {
     try {
       const response = await CatsService.checkout({
-        user_id: 1,
+        userId: 1,
       });
 
-      const { error } = response;
+      const { error, data } = response;
 
       if (error === "cart_empty") {
         return res.apiError<any>({
@@ -58,27 +79,25 @@ class CartsController {
 
       if (error === "product_not_found") {
         return res.apiError<any>({
-          status: 400,
-          message: "Product not found",
-          code: EResponseCode.PRODUCT_NOT_FOUND,
+          status: 404,
+          message: "Product is not found",
+          code: EResponseCode.NOT_FOUND,
         });
       }
 
       if (error === "stock_not_enough") {
         return res.apiError<any>({
           status: 400,
-          message: "Product not found",
+          message: "Product stock is not enough",
           code: EResponseCode.PRODUCT_STOCK_NOT_ENOUGH,
         });
       }
 
-      if (error === "general_error") {
+      if (error === "general_error" || !data) {
         throw response;
       }
 
-      const { data } = response;
-
-      return res.apiSuccess<any>({
+      return res.apiSuccess<IResBodyCheckout>({
         status: 201,
         message: "Success",
         code: EResponseCode.GET_DATA_SUCCESS,
@@ -95,20 +114,46 @@ class CartsController {
   }
 
   @Post("")
-  protected async createCart(req: Request, res: Response) {
+  @Middleware(createCartValidator)
+  protected async createCart(
+    req: Request<unknown, unknown, TReqBodyCreateCart>,
+    res: Response
+  ) {
     try {
-      const { product_id, quantity } = req.body;
+      const { productId, quantity } = req.body;
 
-      const { data } = await CatsService.createCart({
-        product_id: product_id,
-        user_id: 1,
+      const response = await CatsService.createCart({
+        productId: productId,
+        userId: 1,
         quantity: quantity,
       });
 
-      return res.apiSuccess<any>({
+      const { data, error } = response;
+
+      if (error === "product_not_found") {
+        return res.apiError<EResponseCode>({
+          status: 404,
+          code: EResponseCode.NOT_FOUND,
+          message: "Product is not found",
+        });
+      }
+
+      if (error === "stock_not_enough") {
+        return res.apiError<EResponseCode>({
+          status: 400,
+          code: EResponseCode.NOT_FOUND,
+          message: "Product stock is not enough",
+        });
+      }
+
+      if (error === "general_error" || !data) {
+        throw response;
+      }
+
+      return res.apiSuccess<IResBodyCreateCart>({
         status: 201,
         message: "Success",
-        code: EResponseCode.GET_DATA_SUCCESS,
+        code: EResponseCode.SUBMIT_DATA_SUCCESS,
         data,
       });
     } catch (e) {
@@ -121,26 +166,59 @@ class CartsController {
     }
   }
 
-  @Put(":id")
-  protected async updateCartQty(req: Request, res: Response) {
+  @Put(":cartItemId")
+  @Middleware([
+    updateCartItemQtyParamsValidator,
+    updateCartItemQtyBodyValidator,
+  ])
+  protected async updateCartItemQty(
+    req: Request<
+      TReqParamsUpdateCartItemQty,
+      unknown,
+      TReqBodyUpdateCartItemQty
+    >,
+    res: Response
+  ) {
     try {
       const { quantity } = req.body;
-      const { id } = req.params;
+      const { cartItemId } = req.params;
 
-      const { data } = await CatsService.updateCartQty({
-        cart_id: Number(id) || -1,
-        user_id: 1,
+      const response = await CatsService.updateCartItemQty({
+        cartItemId: cartItemId,
+        userId: 1,
         quantity: quantity,
       });
 
-      return res.apiSuccess<any>({
+      const { data, error } = response;
+
+      if (error === "cart_item_not_found") {
+        return res.apiError<EResponseCode>({
+          status: 404,
+          code: EResponseCode.NOT_FOUND,
+          message: "Cart item is not found",
+        });
+      }
+
+      if (error === "stock_not_enough") {
+        return res.apiError<EResponseCode>({
+          status: 404,
+          code: EResponseCode.PRODUCT_STOCK_NOT_ENOUGH,
+          message: "Product stock is not enough",
+        });
+      }
+
+      if (error === "general_error" || !data) {
+        throw response;
+      }
+
+      return res.apiSuccess<IResBodyUpdateCartItemQty>({
         status: 200,
         message: "Success",
         code: EResponseCode.GET_DATA_SUCCESS,
         data,
       });
     } catch (e) {
-      logger.error(e.message || e, "CartsController: updateCartQty: ");
+      logger.error(e.message || e, "CartsController: updateCartItemQty: ");
       return res.apiError<EResponseCode>({
         status: 500,
         code: EResponseCode.GENERAL_ERROR,
@@ -149,24 +227,42 @@ class CartsController {
     }
   }
 
-  @Delete(":id")
-  protected async deleteCart(req: Request, res: Response) {
+  @Delete(":cartItemId")
+  @Middleware(deleteCartItemValidator)
+  protected async deleteCartItem(
+    req: Request<TReqParamsDeleteCartItem>,
+    res: Response
+  ) {
     try {
-      const { id } = req.params;
+      const { cartItemId } = req.params;
 
-      const { data } = await CatsService.deleteCart({
-        cart_id: Number(id) || -1,
-        user_id: 1,
+      const response = await CatsService.deleteCartItem({
+        cart_id: Number(cartItemId) || -1,
+        userId: 1,
       });
 
-      return res.apiSuccess<any>({
+      const { data, error } = response;
+
+      if (error === "cart_item_not_found") {
+        return res.apiError<EResponseCode>({
+          status: 404,
+          code: EResponseCode.NOT_FOUND,
+          message: "Cart item is not found",
+        });
+      }
+
+      if (error === "general_error" || !data) {
+        throw response;
+      }
+
+      return res.apiSuccess<IResBodyDeleteCartItem>({
         status: 200,
         message: "Success",
         code: EResponseCode.GET_DATA_SUCCESS,
         data,
       });
     } catch (e) {
-      logger.error(e.message || e, "CartsController: deleteCart: ");
+      logger.error(e.message || e, "CartsController: deleteCartItem: ");
       return res.apiError<EResponseCode>({
         status: 500,
         code: EResponseCode.GENERAL_ERROR,

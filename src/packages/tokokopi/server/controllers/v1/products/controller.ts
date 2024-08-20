@@ -1,8 +1,18 @@
-import { Controller, Get, Post } from "@overnightjs/core";
+import { Controller, Get, Middleware, Post } from "@overnightjs/core";
 import { Request, Response } from "express";
 import * as ProductService from "./service";
 import { EResponseCode } from "~/lib/core/constants";
 import logger from "~/lib/core/helpers/logger";
+import {
+  createProductValidator,
+  getProductDetailsValidator,
+} from "./validator";
+import {
+  IResBodyCreateProduct,
+  IResBodyGetProductDetails,
+  IResBodyGetProductList,
+  TReqBodyCreateProduct,
+} from "./type";
 
 @Controller("products")
 class ProductsController {
@@ -14,20 +24,22 @@ class ProductsController {
         offset: 0,
       });
 
-      const { error } = response;
+      logger.info(response, "Products Controller - getProductList Data: ");
 
-      if (error === "general_error") {
+      const { error, data } = response;
+
+      if (error === "general_error" || !data) {
         throw response;
       }
 
-      return res.apiSuccess<any>({
+      return res.apiSuccess<IResBodyGetProductList>({
         status: 200,
         message: "Success",
         code: EResponseCode.GET_DATA_SUCCESS,
-        data: response.data,
+        data: data,
       });
     } catch (e) {
-      logger.error(e.message || e, "ProductsController: getProductList: ");
+      logger.error(e.message || e, "Products Controller: getProductList: ");
       return res.apiError<EResponseCode>({
         status: 500,
         code: EResponseCode.GENERAL_ERROR,
@@ -36,23 +48,44 @@ class ProductsController {
     }
   }
 
-  @Get(":id")
+  @Get(":productId")
+  @Middleware(getProductDetailsValidator)
   protected async getProductDetails(req: Request, res: Response) {
     try {
-      const { id } = req.params;
+      const { productId } = req.params;
 
-      const { data } = await ProductService.getProductDetails({
-        id: +id,
+      logger.info(
+        `Products Controller - getProductDetails with params: ${req.params}`
+      );
+
+      const response = await ProductService.getProductDetails({
+        productId: productId,
       });
 
-      return res.apiSuccess<any>({
+      logger.info(response, "Products Controller - getProductDetails Data: ");
+
+      const { error, data } = response;
+
+      if (error === "product_not_found") {
+        return res.apiError<EResponseCode>({
+          status: 404,
+          code: EResponseCode.NOT_FOUND,
+          message: "Product not found",
+        });
+      }
+
+      if (error === "general_error" || !data) {
+        throw response;
+      }
+
+      return res.apiSuccess<IResBodyGetProductDetails>({
         status: 200,
         message: "Success",
         code: EResponseCode.GET_DATA_SUCCESS,
-        data,
+        data: data.product,
       });
     } catch (e) {
-      logger.error(e.message || e, "ProductsController: getProductDetails: ");
+      logger.error(e.message || e, "Products Controller: getProductDetails: ");
       return res.apiError<EResponseCode>({
         status: 500,
         code: EResponseCode.GENERAL_ERROR,
@@ -62,28 +95,40 @@ class ProductsController {
   }
 
   @Post("")
-  protected async createProduct(req: Request, res: Response) {
+  @Middleware(createProductValidator)
+  protected async createProduct(
+    req: Request<unknown, unknown, TReqBodyCreateProduct>,
+    res: Response
+  ) {
     try {
-      const { name, description, price, stock, image_url } = req.body;
+      const { name, description, price, stock, imageUrl } = req.body;
 
-      const { data, error } = await ProductService.createProduct({
+      logger.info(
+        `Products Controller - createProduct with params: ${req.body}`
+      );
+
+      const response = await ProductService.createProduct({
         name,
         description,
         price,
         stock,
-        image_url,
+        imageUrl,
       });
 
-      if (error === "general_error") throw error;
+      logger.info(response, "Products Controller - createProduct Data: ");
 
-      return res.apiSuccess<any>({
+      const { error, data } = response;
+
+      if (error === "general_error" || !data) throw response;
+
+      return res.apiSuccess<IResBodyCreateProduct>({
         status: 200,
         message: "Success",
         code: EResponseCode.GET_DATA_SUCCESS,
         data,
       });
     } catch (e) {
-      logger.error(e.message || e, "ProductsController: createProduct: ");
+      logger.error(e.message || e, "Products Controller: createProduct: ");
       return res.apiError<EResponseCode>({
         status: 500,
         code: EResponseCode.GENERAL_ERROR,

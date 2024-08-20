@@ -14,14 +14,14 @@ export const createCart = async (
   params: ICreateCartParams
 ): Promise<ICreateCartReturn> => {
   try {
-    const { product_id, user_id, quantity } = params;
+    const { productId, userId, quantity } = params;
 
     logger.info(
-      { product_id, user_id, quantity },
+      { productId, userId, quantity },
       "Carts Service - createCart Params: "
     );
 
-    const product = await Product.findByPk(product_id);
+    const product = await Product.findByPk(productId);
     if (!product) return { error: "product_not_found" };
 
     if (product.stock < quantity) {
@@ -30,10 +30,10 @@ export const createCart = async (
 
     const [cart, isCreated] = await Cart.findOrCreate({
       where: {
-        user_id,
-        product_id,
+        userId,
+        productId,
       },
-      defaults: { quantity, user_id, product_id },
+      defaults: { quantity, userId, productId },
     });
 
     if (!isCreated) {
@@ -54,27 +54,27 @@ export const createCart = async (
   }
 };
 
-interface IGetCartsByUserParams {
-  user_id: number;
+interface IGetCartItemsByUserParams {
+  userId: number;
 }
-interface IGetCartsByUserReturn {
+interface IGetCartItemsByUserReturn {
   data?: { cartItems: Cart[]; totalPrice: number; totalItems: number };
   error?: "general_error";
 }
-export const getCartsByUser = async (
-  params: IGetCartsByUserParams
-): Promise<IGetCartsByUserReturn> => {
+export const getCartItemsByUser = async (
+  params: IGetCartItemsByUserParams
+): Promise<IGetCartItemsByUserReturn> => {
   try {
-    const { user_id } = params;
+    const { userId } = params;
 
-    logger.info({ user_id }, "Carts Service - getCartsByUser Params: ");
+    logger.info({ userId }, "Carts Service - getCartItemsByUser Params: ");
 
     const carts = await Cart.findAll({
-      where: { user_id },
+      where: { userId },
       order: [["id", "DESC"]],
       include: {
         model: Product,
-        attributes: ["id", "name", "price", "stock", "image_url"],
+        attributes: ["id", "name", "price", "stock", "imageUrl"],
       },
     });
 
@@ -100,39 +100,42 @@ export const getCartsByUser = async (
       },
     };
   } catch (err) {
-    logger.error(err.message || err, "Carts Service - getCartsByUser Error: ");
+    logger.error(
+      err.message || err,
+      "Carts Service - getCartItemsByUser Error: "
+    );
     return { error: "general_error" };
   }
 };
 
-interface IUpdateCartQtyParams {
-  cart_id: number;
-  user_id: number;
+interface IUpdateCartItemQtyParams {
+  cartItemId: string;
+  userId: number;
   quantity: number;
 }
-interface IUpdateCartQtyReturn {
+interface IUpdateCartItemQtyReturn {
   data?: Cart;
-  error?: "cart_not_found" | "stock_not_enough" | "general_error";
+  error?: "cart_item_not_found" | "stock_not_enough" | "general_error";
 }
-export const updateCartQty = async (
-  params: IUpdateCartQtyParams
-): Promise<IUpdateCartQtyReturn> => {
+export const updateCartItemQty = async (
+  params: IUpdateCartItemQtyParams
+): Promise<IUpdateCartItemQtyReturn> => {
   try {
-    const { cart_id, user_id, quantity } = params;
+    const { cartItemId, userId, quantity } = params;
     logger.info(
-      { cart_id, user_id, quantity },
-      "Carts Service - updateCartQty Params: "
+      { cartItemId, userId, quantity },
+      "Carts Service - updateCartItemQty Params: "
     );
 
     const cart = await Cart.findOne({
       where: {
-        id: cart_id,
-        user_id,
+        id: cartItemId,
+        userId,
       },
       include: [Product],
     });
 
-    if (!cart) return { error: "cart_not_found" };
+    if (!cart) return { error: "cart_item_not_found" };
 
     cart.quantity = quantity;
 
@@ -142,50 +145,56 @@ export const updateCartQty = async (
 
     const updatedCart = await cart.save();
 
-    logger.info(updatedCart.toJSON(), "Carts Service - createCart Data: ");
+    logger.info(
+      updatedCart.toJSON(),
+      "Carts Service - updateCartItemQty Data: "
+    );
 
     return { data: updatedCart };
   } catch (err) {
-    logger.error(err.message || err, "Carts Service - updateCartQty Error: ");
+    logger.error(
+      err.message || err,
+      "Carts Service - updateCartItemQty Error: "
+    );
     return { error: "general_error" };
   }
 };
 
-interface IDeleteCartParams {
+interface IDeleteCartItemParams {
   cart_id: number;
-  user_id: number;
+  userId: number;
 }
-interface IDeleteCartReturn {
+interface IDeleteCartItemReturn {
   data?: { message: string };
-  error?: "cart_not_found" | "general_error";
+  error?: "cart_item_not_found" | "general_error";
 }
-export const deleteCart = async (
-  params: IDeleteCartParams
-): Promise<IDeleteCartReturn> => {
+export const deleteCartItem = async (
+  params: IDeleteCartItemParams
+): Promise<IDeleteCartItemReturn> => {
   try {
-    const { cart_id, user_id } = params;
-    logger.info({ cart_id, user_id }, "Carts Service - deleteCart Params: ");
+    const { cart_id, userId } = params;
+    logger.info({ cart_id, userId }, "Carts Service - deleteCartItem Params: ");
 
     const record = await Cart.destroy({
       where: {
         id: cart_id,
-        user_id,
+        userId,
       },
     });
 
-    if (record === 0) return { error: "cart_not_found" };
+    if (record === 0) return { error: "cart_item_not_found" };
 
     logger.info(record, "Carts Service - createCart Data: ");
 
-    return { data: { message: "delete cart success" } };
+    return { data: { message: "Delete cart item success" } };
   } catch (err) {
-    logger.error(err.message || err, "Carts Service - deleteCart Error: ");
+    logger.error(err.message || err, "Carts Service - deleteCartItem Error: ");
     return { error: "general_error" };
   }
 };
 
 interface ICheckoutParams {
-  user_id: number;
+  userId: number;
 }
 interface ICheckoutReturn {
   data?: { message: string };
@@ -198,14 +207,14 @@ interface ICheckoutReturn {
 export const checkout = async (
   params: ICheckoutParams
 ): Promise<ICheckoutReturn> => {
-  const { user_id } = params;
-  logger.info({ user_id }, "Carts Service - checkout Params: ");
+  const { userId } = params;
+  logger.info({ userId }, "Carts Service - checkout Params: ");
   const db = Connection.getMysqlInstance();
   const t = await db.transaction();
 
   try {
     const carts = await Cart.findAll({
-      where: { user_id },
+      where: { userId },
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
@@ -216,16 +225,14 @@ export const checkout = async (
     }
 
     const products = await Product.findAll({
-      where: { id: carts.map((cart) => cart.product_id) },
+      where: { id: carts.map((cart) => cart.productId) },
       transaction: t,
       lock: t.LOCK.UPDATE,
     });
 
     const productUpdates: { id: number; stock: number }[] = [];
     for (const cart of carts) {
-      const product = products.find(
-        (product) => product.id === cart.product_id
-      );
+      const product = products.find((product) => product.id === cart.productId);
 
       if (!product) {
         await t.rollback();
@@ -254,13 +261,13 @@ export const checkout = async (
       )
     );
 
-    await Cart.destroy({ where: { user_id }, transaction: t });
+    await Cart.destroy({ where: { userId }, transaction: t });
 
     await t.commit();
 
     logger.info({ success: true }, "Carts Service - checkout Data: ");
 
-    return { data: { message: "checkout cart items success" } };
+    return { data: { message: "Checkout cart items success" } };
   } catch (err) {
     await t.rollback();
     logger.error(err.message || err, "Carts Service - checkout Error: ");

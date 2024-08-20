@@ -14,15 +14,15 @@ import { Optional } from "sequelize";
 
 export interface ICartAttributes {
   id: number;
-  user_id: number;
-  product_id: number;
+  userId: number;
+  productId: number;
   quantity: number;
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ICartCreationAttributes
-  extends Optional<ICartAttributes, "id" | "created_at" | "updated_at"> {}
+  extends Optional<ICartAttributes, "id" | "createdAt" | "updatedAt"> {}
 
 @Table({
   tableName: "carts",
@@ -41,18 +41,18 @@ class Cart extends Model<ICartAttributes, ICartCreationAttributes> {
 
   @AllowNull(false)
   @Column(DataType.INTEGER.UNSIGNED)
-  declare user_id: number;
+  declare userId: number;
 
   @AllowNull(false)
   @ForeignKey(() => Product)
   @Column(DataType.INTEGER.UNSIGNED)
-  declare product_id: number; // No direct property declaration, use `!` to indicate it's initialized
+  declare productId: number; // No direct property declaration, use `!` to indicate it's initialized
 
   @AllowNull(false)
   @Column(DataType.INTEGER.UNSIGNED)
   declare quantity: number; // No direct property declaration, use `!` to indicate it's initialized
 
-  @BelongsTo(() => Product, "product_id")
+  @BelongsTo(() => Product, "productId")
   declare product: Product; // The relation is defined here
 }
 

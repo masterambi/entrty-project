@@ -1,19 +1,21 @@
+import {
+  TCheckoutResponse,
+  TCreateCartResponse,
+  TDeleteCartItemResponse,
+  TGetCartItemsByUserResponse,
+  TReqBodyCreateCart,
+  TReqBodyUpdateCartItemQty,
+  TUpdateCartItemQtyResponse,
+} from "~/packages/tokokopi/server/controllers/v1/carts/type";
 import { IRootModel } from ".";
-import { TProduct } from "./product";
 import { createModel } from "@rematch/core";
-
-export type TCart = {
-  id: number;
-  user_id: number;
-  product_id: number;
-  product: TProduct;
-  quantity: number;
-};
+import httpReq from "~/lib/core/helpers/httpReq";
+import { EResponseCode } from "~/lib/core/constants";
 
 export interface ICartState {
-  cartItems: TCart[];
-  totalPrice: number;
-  totalItems: number;
+  cartItems: TGetCartItemsByUserResponse["data"]["cartItems"];
+  totalPrice: TGetCartItemsByUserResponse["data"]["totalPrice"];
+  totalItems: TGetCartItemsByUserResponse["data"]["totalItems"];
 }
 
 const INITIAL_STATE: ICartState = {
@@ -46,55 +48,110 @@ const Cart = createModel<IRootModel>()({
     },
   },
   effects: (dispatch) => ({
-    async addToCartItem({ id, quantity }: { id: number; quantity: number }) {
-      await fetch(`/api/v1/carts`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json", // Set the content type to JSON
-        },
-        body: JSON.stringify({
-          product_id: id,
-          quantity,
-        }),
-      });
+    async addToCartItem({
+      productId,
+      quantity,
+      onSuccess,
+    }: {
+      productId: number;
+      quantity: number;
+      onSuccess?: () => void;
+    }) {
+      try {
+        await httpReq<TCreateCartResponse, TReqBodyCreateCart>(
+          `/api/v1/carts`,
+          {
+            method: "POST",
+            data: {
+              productId,
+              quantity,
+            },
+          }
+        );
+
+        if (onSuccess) onSuccess();
+      } catch (err) {
+        const error = err.response as ApiError<EResponseCode>;
+
+        // TODO: handle error
+        console.log(error);
+      }
     },
     async fetchCartItems() {
-      const response = await fetch(`/api/v1/carts`);
-      const responseJSON = await response.json();
-      dispatch.cart.setCartItems(responseJSON.data.cart_items);
-      dispatch.cart.setTotalPrice(responseJSON.data.total_price);
-      dispatch.cart.setTotalItems(responseJSON.data.total_items);
+      try {
+        const { response } = await httpReq<TGetCartItemsByUserResponse>(
+          `/api/v1/carts`,
+          {
+            method: "GET",
+          }
+        );
+
+        if (response.data) {
+          dispatch.cart.setCartItems(response.data.cartItems);
+          dispatch.cart.setTotalPrice(response.data.totalPrice);
+          dispatch.cart.setTotalItems(response.data.totalItems);
+        }
+      } catch (err) {
+        const error = err.response as ApiError<EResponseCode>;
+
+        // TODO: handle error
+        console.log(error);
+      }
     },
-    updateCartItemQuantity: async ({
+    async updateCartItemQuantity({
       id,
       quantity,
     }: {
       id: number;
       quantity: number;
-    }) => {
-      await fetch(`/api/v1/carts/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json", // Set the content type to JSON
-        },
-        body: JSON.stringify({
-          quantity,
-        }),
-      });
+    }) {
+      try {
+        await httpReq<TUpdateCartItemQtyResponse, TReqBodyUpdateCartItemQty>(
+          `/api/v1/carts/${id}`,
+          {
+            method: "PUT",
+            data: {
+              quantity,
+            },
+          }
+        );
 
-      dispatch.cart.fetchCartItems(); // Refresh cart after update
+        dispatch.cart.fetchCartItems(); // Refresh cart after update
+      } catch (err) {
+        const error = err.response as ApiError<EResponseCode>;
+
+        // TODO: handle error
+        console.log(error);
+      }
     },
-    deleteCartItem: async (id) => {
-      await fetch(`/api/v1/carts/${id}`, {
-        method: "DELETE",
-      });
-      dispatch.cart.fetchCartItems();
+    async deleteCartItem(id: number) {
+      try {
+        await httpReq<TDeleteCartItemResponse>(`/api/v1/carts/${id}`, {
+          method: "DELETE",
+        });
+
+        dispatch.cart.fetchCartItems();
+      } catch (err) {
+        const error = err.response as ApiError<EResponseCode>;
+
+        // TODO: handle error
+        console.log(error);
+      }
     },
-    checkoutCart: async () => {
-      await fetch(`/api/v1/carts/checkout`, {
-        method: "POST",
-      });
-      dispatch.cart.fetchCartItems();
+    async checkoutCart(payload?: { onSuccess?: () => void }) {
+      try {
+        await httpReq<TCheckoutResponse>(`/api/v1/carts/checkout`, {
+          method: "POST",
+        });
+
+        dispatch.cart.fetchCartItems();
+        if (payload && payload.onSuccess) payload.onSuccess();
+      } catch (err) {
+        const error = err.response as ApiError<EResponseCode>;
+
+        // TODO: handle error
+        console.log(error);
+      }
     },
   }),
 });

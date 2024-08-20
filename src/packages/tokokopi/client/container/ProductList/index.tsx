@@ -1,8 +1,9 @@
 import React, { useEffect, FC, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { TDispatch, TRootState } from "../../client/redux";
+
 import { ProductListContent, ProductListPage } from "./style";
 import ProductCard from "./components/ProductCard";
+import { TDispatch, TRootState } from "../../redux";
 
 type Props = {};
 
@@ -16,7 +17,7 @@ const ProductList: FC = (props: Props) => {
   );
 
   const handleAddToCart = (productId: number) => async () => {
-    await d.cart.addToCartItem({ id: productId, quantity: 1 });
+    await d.cart.addToCartItem({ productId, quantity: 1 });
     console.log("move to cart page");
   };
 
@@ -30,7 +31,7 @@ const ProductList: FC = (props: Props) => {
       return (
         <ProductCard
           name={product.name}
-          image={product.image_url}
+          image={product.imageUrl}
           price={product.price}
           stock={product.stock}
           key={product.id}

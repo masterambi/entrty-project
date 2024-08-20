@@ -7,9 +7,6 @@ const redaction: string[] = [
   "*.password",
   "description",
   "*.description",
-  "*.description_text",
-  "mobile_number",
-  "*.mobile_number",
 ];
 
 console.log(process.env.NODE_ENV);

@@ -15,13 +15,13 @@ export interface IProductAttributes {
   description: string;
   price: number;
   stock: number;
-  image_url: string;
-  created_at: Date;
-  updated_at: Date;
+  imageUrl: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IProductCreationAttributes
-  extends Optional<IProductAttributes, "id" | "created_at" | "updated_at"> {}
+  extends Optional<IProductAttributes, "id" | "createdAt" | "updatedAt"> {}
 
 @Table({
   tableName: "products",
@@ -56,7 +56,7 @@ class Product extends Model<IProductAttributes, IProductCreationAttributes> {
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  declare image_url: string;
+  declare imageUrl: string;
 }
 
 export default Product;
