@@ -11,13 +11,6 @@ class Connection {
   static async mysqlConnection(
     models: SequelizeOptions["models"]
   ): Promise<Sequelize | null> {
-    console.log({
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT) || 3306,
-      database: process.env.DB_NAME,
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-    });
     try {
       if (!Connection.sequelize) {
         Connection.sequelize = new Sequelize({

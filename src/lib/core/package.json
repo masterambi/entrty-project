@@ -20,6 +20,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@types/lodash.debounce": "^4.0.9",
     "@vitejs/plugin-react-swc": "^3.7.0",
     "concurrently": "^8.2.2",

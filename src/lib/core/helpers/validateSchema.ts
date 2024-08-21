@@ -6,7 +6,6 @@ const validateSchema = <T extends z.AnyZodObject, D>(schema: T, data: D) => {
     return { validatedData: validatedData, errMsg: [], isError: false };
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log(error.issues);
       const errorMessages = error.issues.map((issue) => ({
         message: `${issue.path[0]} is ${issue.message}`,
       }));

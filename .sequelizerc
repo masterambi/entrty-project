@@ -1,0 +1,15 @@
+// .sequelizerc
+const path = require("path");
+
+const packageName = process.env.PACKAGE || "";
+
+module.exports = {
+  config: path.resolve("config", "sequelize", "config", "config.js"),
+  "seeders-path": path.resolve("config", "sequelize", packageName, "seeders"),
+  "migrations-path": path.resolve(
+    "config",
+    "sequelize",
+    packageName,
+    "migrations"
+  ),
+};

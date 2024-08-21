@@ -36,9 +36,19 @@ export default function httpReq<
         resolve({ response: resp.data as Response, headers: resp.headers });
       })
       .catch((err: AxiosError<IResponse<Response>>) => {
+        // Error from the server
+        if (err.response) {
+          reject({
+            response: err.response?.data as Response,
+            headers: err.response?.headers,
+          });
+        }
+
         reject({
-          response: err.response?.data as Response,
-          headers: err.response?.headers,
+          response: {
+            code: err.code,
+            message: err.message,
+          },
         });
       });
   });

@@ -18,3 +18,7 @@ export const formatCurrency = (price: number, withSymbol?: boolean) => {
     .format(price)
     .trim();
 };
+
+export const createFakeArray = (length: number): number[] => {
+  return [...new Array(length)].map((_, idx) => idx);
+};

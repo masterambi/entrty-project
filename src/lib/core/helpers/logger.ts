@@ -9,8 +9,6 @@ const redaction: string[] = [
   "*.description",
 ];
 
-console.log(process.env.NODE_ENV);
-
 export default logger({
   redact: {
     paths: redaction,
