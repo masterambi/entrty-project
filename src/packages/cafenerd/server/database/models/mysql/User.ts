@@ -1,4 +1,4 @@
-import { Optional } from "sequelize";
+import type { Optional } from "sequelize";
 import { Model } from "sequelize-typescript";
 
 export interface IUserAttributes {
@@ -12,9 +12,6 @@ export interface IUserAttributes {
 }
 
 export interface IUserCreationAttributes
-  extends Optional<
-    IUserAttributes,
-    "id" | "createdAt" | "updatedAt" | "deletedAt"
-  > {}
+  extends Optional<IUserAttributes, "id" | "createdAt" | "updatedAt" | "deletedAt"> {}
 
 class User extends Model<IUserAttributes, IUserCreationAttributes> {}

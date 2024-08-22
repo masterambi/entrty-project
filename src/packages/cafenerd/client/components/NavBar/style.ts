@@ -1,5 +1,5 @@
-import { styled } from "styled-components";
 import { Link } from "react-router-dom";
+import { styled } from "styled-components";
 
 export const NavBarTitle = styled(Link)`
   font-weight: 600;

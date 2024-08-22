@@ -1,7 +1,7 @@
-import React from "react";
-import { CheckoutContent, PriceContent, PriceText, TotalText } from "./style";
-import { formatCurrency } from "~/lib/core/utils";
 import { Button } from "antd";
+import React from "react";
+import { formatCurrency } from "~/lib/core/utils";
+import { CheckoutContent, PriceContent, PriceText, TotalText } from "./style";
 
 type ICheckoutSectionProps = {
   totalPrice?: number;
@@ -22,12 +22,7 @@ export const CheckoutSection = ({
         <TotalText>Total: </TotalText>
         <PriceText>{formatCurrency(totalPrice || 0, true)}</PriceText>
       </PriceContent>
-      <Button
-        onClick={onCheckoutClick}
-        type="primary"
-        size="large"
-        disabled={loading}
-      >
+      <Button onClick={onCheckoutClick} type="primary" size="large" disabled={loading}>
         Checkout ({totalItems})
       </Button>
     </CheckoutContent>

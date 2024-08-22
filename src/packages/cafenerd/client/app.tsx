@@ -1,22 +1,20 @@
-import React, { lazy, Suspense } from "react";
-import { Route, Routes } from "react-router";
-import { THEMES } from "./constants/style";
-import { ThemeProvider } from "styled-components";
 import { ConfigProvider } from "antd";
+import React, { type FC, lazy, Suspense } from "react";
+import { Route, Routes } from "react-router";
+import { ThemeProvider } from "styled-components";
 import { GlobalStyles } from "~/lib/client/components/LayoutApp";
 import AppLayout from "./components/AppLayout";
+import { THEMES } from "./constants/style";
 
 const ProductList = lazy(() => import("./container/ProductList"));
 const Cart = lazy(() => import("./container/Cart"));
 
-type Props = {};
-
-const App = (props: Props) => {
+const App: FC = () => {
   return (
     <ThemeProvider theme={THEMES}>
       <ConfigProvider>
         <GlobalStyles />
-        <Suspense fallback={<div></div>}>
+        <Suspense fallback={<AppLayout />}>
           <Routes>
             <Route path="/" element={<AppLayout />}>
               <Route path="" element={<ProductList />} />

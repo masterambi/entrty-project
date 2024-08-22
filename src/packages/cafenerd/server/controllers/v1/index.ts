@@ -1,6 +1,6 @@
 import { ChildControllers, Controller } from "@overnightjs/core";
-import ProductsController from "./products/controller";
 import CartsController from "./carts/controller";
+import ProductsController from "./products/controller";
 
 @Controller("api/v1")
 @ChildControllers([new CartsController(), new ProductsController()])

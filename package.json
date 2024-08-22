@@ -5,7 +5,11 @@
   "scripts": {
     "start:client": "make start_client",
     "start:server": "make start_server",
-    "start": "make start"
+    "start": "make start",
+    "lint:client": "biome lint ./src/packages/*/client ./src/lib/client --config-path=./config/biome/client",
+    "lint:server": "biome lint ./src/packages/*/server ./src/lib/server ./src/lib/core --config-path=./config/biome/server",
+    "lint:client:fix": "biome check --apply ./src/packages/*/client ./src/lib/client --config-path=./config/biome/client",
+    "lint:server:fix": "biome check --apply ./src/packages/*/server ./src/lib/server ./src/lib/core --config-path=./config/biome/server"
   },
   "keywords": [],
   "author": "",

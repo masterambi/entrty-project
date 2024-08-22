@@ -1,5 +1,8 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { Image } from "antd";
+import debounce from "lodash.debounce";
+import React, { type FC, useCallback, useEffect, useState } from "react";
+import { formatCurrency } from "~/lib/core/utils";
 import {
   CartItemContainer,
   CartItemContent,
@@ -9,9 +12,6 @@ import {
   QuantityInput,
   SpinButton,
 } from "./style";
-import { formatCurrency } from "~/lib/core/utils";
-import debounce from "lodash.debounce";
-import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 
 export interface ICartItemProps {
   image: string;
@@ -62,10 +62,10 @@ export const CartItem: FC<ICartItemProps> = ({
 
   const debouncedOnChange = useCallback(
     debounce((newQuantity: number) => {
-      onQuantityChange && onQuantityChange(newQuantity);
+      onQuantityChange?.(newQuantity);
       setIsChangingQty(false);
     }, 300),
-    [onQuantityChange, initialQuantity]
+    [onQuantityChange, initialQuantity],
   );
 
   useEffect(() => {
@@ -82,11 +82,7 @@ export const CartItem: FC<ICartItemProps> = ({
 
         <QuantityControl>
           {quantity > 1 ? (
-            <SpinButton
-              disabled={isLoadingUpdateQty}
-              size="small"
-              onClick={decrementQuantity}
-            >
+            <SpinButton disabled={isLoadingUpdateQty} size="small" onClick={decrementQuantity}>
               <MinusOutlined />
             </SpinButton>
           ) : (
@@ -103,9 +99,7 @@ export const CartItem: FC<ICartItemProps> = ({
             size="small"
             min={1}
             value={quantity}
-            onChange={(e) =>
-              handleQuantityChange(Number(e.currentTarget.value))
-            }
+            onChange={(e) => handleQuantityChange(Number(e.currentTarget.value))}
             inputMode="numeric"
             type="number"
           />

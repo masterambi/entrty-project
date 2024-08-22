@@ -1,5 +1,5 @@
-import styled from "styled-components";
 import { Button, Input, Typography } from "antd";
+import styled from "styled-components";
 
 export const CartItemContainer = styled.li`
   padding: 16px;

@@ -1,7 +1,7 @@
-import { EResponseCode } from "~/lib/core/constants";
-import { IRootModel } from ".";
 import { createModel } from "@rematch/core";
 import { notification } from "antd";
+import type { EResponseCode } from "~/lib/core/constants";
+import type { IRootModel } from ".";
 
 export interface IAppState {
   error: {

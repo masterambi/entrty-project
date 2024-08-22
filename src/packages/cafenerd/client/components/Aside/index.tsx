@@ -1,7 +1,7 @@
-import React, { useMemo } from "react";
-import { Layout, Menu } from "antd";
-import { useLocation, useNavigate } from "react-router-dom";
 import { ShopOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { Layout, Menu } from "antd";
+import React, { useMemo } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 const { Sider } = Layout;
 
 const menuKeys = ["/", "/cart"];

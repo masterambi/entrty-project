@@ -1,3 +1,4 @@
+import type { Optional } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
@@ -10,7 +11,6 @@ import {
   Table,
 } from "sequelize-typescript";
 import Product from "./Product";
-import { Optional } from "sequelize";
 
 export interface ICartItemAttributes {
   id: number;

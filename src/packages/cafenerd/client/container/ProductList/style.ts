@@ -1,5 +1,5 @@
-import styled from "styled-components";
 import { ShoppingCartOutlined } from "@ant-design/icons";
+import styled from "styled-components";
 
 export const ProductListPage = styled.div`
   min-height: 100%;

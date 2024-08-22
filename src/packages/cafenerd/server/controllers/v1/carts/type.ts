@@ -1,6 +1,6 @@
-import { z } from "zod";
-import CartItem from "../../../database/models/mysql/CartItem";
-import {
+import type { z } from "zod";
+import type CartItem from "../../../database/models/mysql/CartItem";
+import type {
   createCartSchema,
   deleteCartItemParamsSchema,
   updateCartItemQtyBodySchema,
@@ -16,8 +16,7 @@ export interface IResBodyGetCartItemsByUser {
   totalPrice: number;
   totalItems: number;
 }
-export type TGetCartItemsByUserResponse =
-  ApiSuccess<IResBodyGetCartItemsByUser>;
+export type TGetCartItemsByUserResponse = ApiSuccess<IResBodyGetCartItemsByUser>;
 
 export interface IResBodyCheckout {
   message: string;
@@ -25,18 +24,12 @@ export interface IResBodyCheckout {
 export type TCheckoutResponse = ApiSuccess<IResBodyCheckout>;
 
 export interface IResBodyUpdateCartItemQty extends CartItem {}
-export type TReqParamsUpdateCartItemQty = z.infer<
-  typeof updateCartItemQtyParamsSchema
->;
-export type TReqBodyUpdateCartItemQty = z.infer<
-  typeof updateCartItemQtyBodySchema
->;
+export type TReqParamsUpdateCartItemQty = z.infer<typeof updateCartItemQtyParamsSchema>;
+export type TReqBodyUpdateCartItemQty = z.infer<typeof updateCartItemQtyBodySchema>;
 export type TUpdateCartItemQtyResponse = ApiSuccess<IResBodyUpdateCartItemQty>;
 
 export interface IResBodyDeleteCartItem {
   message: string;
 }
-export type TReqParamsDeleteCartItem = z.infer<
-  typeof deleteCartItemParamsSchema
->;
+export type TReqParamsDeleteCartItem = z.infer<typeof deleteCartItemParamsSchema>;
 export type TDeleteCartItemResponse = ApiSuccess<IResBodyDeleteCartItem>;

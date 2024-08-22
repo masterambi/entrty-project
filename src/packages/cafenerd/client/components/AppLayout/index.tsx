@@ -1,7 +1,7 @@
 import { Layout } from "antd";
 import { Outlet } from "react-router-dom";
-import NavBar from "../NavBar";
 import Aside from "../Aside";
+import NavBar from "../NavBar";
 
 const { Content } = Layout;
 

@@ -1,18 +1,15 @@
 import { Controller, Get, Middleware, Post } from "@overnightjs/core";
-import { Request, Response } from "express";
-import * as ProductService from "./service";
+import type { Request, Response } from "express";
 import { EResponseCode } from "~/lib/core/constants";
 import logger from "~/lib/core/helpers/logger";
-import {
-  createProductValidator,
-  getProductDetailsValidator,
-} from "./validator";
-import {
+import * as ProductService from "./service";
+import type {
   IResBodyCreateProduct,
   IResBodyGetProductDetails,
   IResBodyGetProductList,
   TReqBodyCreateProduct,
 } from "./type";
+import { createProductValidator, getProductDetailsValidator } from "./validator";
 
 @Controller("products")
 class ProductsController {
@@ -54,9 +51,7 @@ class ProductsController {
     try {
       const { productId } = req.params;
 
-      logger.info(
-        `Products Controller - getProductDetails with params: ${req.params}`
-      );
+      logger.info(`Products Controller - getProductDetails with params: ${req.params}`);
 
       const response = await ProductService.getProductDetails({
         productId: productId,
@@ -98,14 +93,12 @@ class ProductsController {
   @Middleware(createProductValidator)
   protected async createProduct(
     req: Request<unknown, unknown, TReqBodyCreateProduct>,
-    res: Response
+    res: Response,
   ) {
     try {
       const { name, description, price, stock, imageUrl } = req.body;
 
-      logger.info(
-        `Products Controller - createProduct with params: ${req.body}`
-      );
+      logger.info(`Products Controller - createProduct with params: ${req.body}`);
 
       const response = await ProductService.createProduct({
         name,

@@ -1,8 +1,8 @@
-import http from "http";
-import helmet, { HelmetOptions } from "helmet";
+import http from "node:http";
 import { Server } from "@overnightjs/core";
-import express, { NextFunction, Request, Response } from "express";
 import cookieParser from "cookie-parser";
+import express, { type NextFunction, type Request, type Response } from "express";
+import helmet, { type HelmetOptions } from "helmet";
 import { EResponseCode } from "../core/constants";
 
 interface IExpressServer {
@@ -64,9 +64,7 @@ class ExpressServer extends Server implements IExpressServer {
       const server = http.createServer(this.app);
       const handleShutdown = (signal: string): void => {
         const exitCode = signal === "uncaughtException" ? 1 : 0;
-        console.log(
-          `${this.options?.appName} stop running.. Receiving Signal: ${signal}`
-        );
+        console.log(`${this.options?.appName} stop running.. Receiving Signal: ${signal}`);
         server.close((): void => {
           process.exit(exitCode);
         });
@@ -88,9 +86,7 @@ class ExpressServer extends Server implements IExpressServer {
         });
 
       process.on("exit", (code) => {
-        console.log(
-          `${this.options?.appName} is going to exit with code: ${code}`
-        );
+        console.log(`${this.options?.appName} is going to exit with code: ${code}`);
       });
 
       return server.listen.apply(server);

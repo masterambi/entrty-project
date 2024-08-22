@@ -1,8 +1,8 @@
-import React, { FC, useState } from "react";
+import React, { type FC, useState } from "react";
 
 import { ShoppingCartOutlined } from "@ant-design/icons";
 
-import { Card, Button, Skeleton, Image } from "antd";
+import { Button, Card, Image, Skeleton } from "antd";
 import { formatCurrency } from "~/lib/core/utils";
 
 interface IProductCartProps {
@@ -61,18 +61,12 @@ export const ProductCard: FC<IProductCartProps> = ({
         actions={
           !loading
             ? [
-                <Button size="large" type="primary" onClick={onCartClick}>
+                <Button key="cart" size="large" type="primary" onClick={onCartClick}>
                   <ShoppingCartOutlined key="cart" />
                   Add to Cart
                 </Button>,
               ]
-            : [
-                <Skeleton.Button
-                  active={true}
-                  style={{ width: 140 }}
-                  size="large"
-                />,
-              ]
+            : [<Skeleton.Button key="skeleton" active={true} style={{ width: 140 }} size="large" />]
         }
       >
         <Card.Meta

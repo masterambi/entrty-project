@@ -1,15 +1,12 @@
-import React, { useEffect, FC, useMemo, useState } from "react";
+import React, { useEffect, type FC, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-  ProductListContainer,
-  ProductListContent,
-  ProductListPage,
-} from "./style";
-import ProductCard from "./components/ProductCard";
-import { TDispatch, TRootState } from "../../redux";
 import { Button, Modal } from "antd";
 import { useNavigate } from "react-router-dom";
+import { createFakeArray } from "~/lib/core/utils";
+import type { TDispatch, TRootState } from "../../redux";
+import ProductCard from "./components/ProductCard";
+import { ProductListContainer, ProductListContent, ProductListPage } from "./style";
 
 const ProductList: FC = () => {
   const d = useDispatch<TDispatch>();
@@ -17,11 +14,9 @@ const ProductList: FC = () => {
   const navigate = useNavigate();
 
   const isLoading = useSelector(
-    (state: TRootState) => state.loading.effects.product.fetchProductList
+    (state: TRootState) => state.loading.effects.product.fetchProductList,
   );
-  const productList = useSelector(
-    (state: TRootState) => state.product.productList
-  );
+  const productList = useSelector((state: TRootState) => state.product.productList);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -39,9 +34,7 @@ const ProductList: FC = () => {
 
   const content = useMemo(() => {
     if (isLoading) {
-      return [...new Array(10)].map((_, idx) => (
-        <ProductCard loading={true} key={idx} />
-      ));
+      return createFakeArray(10).map((idx) => <ProductCard loading={true} key={idx} />);
     }
     return productList.map((product) => {
       return (

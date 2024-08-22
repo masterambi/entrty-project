@@ -1,19 +1,17 @@
-import { Sequelize, SequelizeOptions } from "sequelize-typescript";
+import { Sequelize, type SequelizeOptions } from "sequelize-typescript";
 import logger from "~/lib/core/helpers/logger";
 
 class Connection {
-  private static sequelize: Sequelize;
+  private sequelize: Sequelize;
 
-  static getMysqlInstance() {
-    return Connection.sequelize;
+  getMysqlInstance() {
+    return this.sequelize;
   }
 
-  static async mysqlConnection(
-    models: SequelizeOptions["models"]
-  ): Promise<Sequelize | null> {
+  async mysqlConnection(models: SequelizeOptions["models"]): Promise<Sequelize | null> {
     try {
-      if (!Connection.sequelize) {
-        Connection.sequelize = new Sequelize({
+      if (!this.sequelize) {
+        this.sequelize = new Sequelize({
           dialect: "mysql",
           models,
           host: process.env.DB_HOST,
@@ -37,10 +35,10 @@ class Connection {
         });
 
         logger.info("TOKOKOPI ======> Mysql connected: ");
-        return Connection.sequelize;
+        return this.sequelize;
       }
 
-      return Connection.sequelize;
+      return this.sequelize;
     } catch (err) {
       logger.error(err, "MySql Connection Error: ");
       return null;
@@ -48,4 +46,4 @@ class Connection {
   }
 }
 
-export default Connection;
+export default new Connection();

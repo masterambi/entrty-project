@@ -1,8 +1,8 @@
-import { init, RematchDispatch, RematchRootState } from "@rematch/core";
-import loadingPlugin, { ExtraModelsFromLoading } from "@rematch/loading";
+import { type RematchDispatch, type RematchRootState, init } from "@rematch/core";
+import loadingPlugin, { type ExtraModelsFromLoading } from "@rematch/loading";
+import type { Middleware } from "redux";
 import logger from "redux-logger";
-import { Middleware } from "redux";
-import { IRootModel, RootModel } from "./models";
+import { type IRootModel, RootModel } from "./models";
 
 const middlewares: Middleware[] = [];
 
@@ -24,7 +24,4 @@ const Store = init<IRootModel, ExtraModelsFromLoading<IRootModel>>({
 export default Store;
 export type TStore = typeof Store;
 export type TDispatch = RematchDispatch<IRootModel>;
-export type TRootState = RematchRootState<
-  IRootModel,
-  ExtraModelsFromLoading<IRootModel>
->;
+export type TRootState = RematchRootState<IRootModel, ExtraModelsFromLoading<IRootModel>>;

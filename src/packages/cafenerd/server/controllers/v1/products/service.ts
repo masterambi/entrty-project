@@ -1,8 +1,8 @@
+import { Op } from "sequelize";
 import logger from "~/lib/core/helpers/logger";
 import Product, {
-  IProductCreationAttributes,
+  type IProductCreationAttributes,
 } from "~/packages/cafenerd/server/database/models/mysql/Product";
-import { Op } from "sequelize";
 
 interface IGetProductListParams {
   limit: number;
@@ -17,7 +17,7 @@ interface IGetProductListReturn {
 }
 
 export const getProductList = async (
-  params: IGetProductListParams
+  params: IGetProductListParams,
 ): Promise<IGetProductListReturn> => {
   try {
     const { limit, offset } = params;
@@ -50,7 +50,7 @@ interface IGetProductDetailsReturn {
   error?: "product_not_found" | "general_error";
 }
 export const getProductDetails = async (
-  params: IGetProductDetailsParams
+  params: IGetProductDetailsParams,
 ): Promise<IGetProductDetailsReturn> => {
   try {
     const { productId } = params;
@@ -79,13 +79,13 @@ interface ICreateProductReturn {
   error?: "general_error";
 }
 export const createProduct = async (
-  params: ICreateProductParams
+  params: ICreateProductParams,
 ): Promise<ICreateProductReturn> => {
   try {
     const { name, description, price, stock, imageUrl } = params;
     logger.info(
       { name, description, price, stock, imageUrl },
-      "Products Service - createProduct Params: "
+      "Products Service - createProduct Params: ",
     );
 
     const product = await Product.create({
@@ -99,10 +99,7 @@ export const createProduct = async (
     logger.info(product.toJSON(), "Products Service - createProduct Data: ");
     return { data: product };
   } catch (err) {
-    logger.error(
-      err.message || err,
-      "Products Service - createProduct Error: "
-    );
+    logger.error(err.message || err, "Products Service - createProduct Error: ");
     return { error: "general_error" };
   }
 };

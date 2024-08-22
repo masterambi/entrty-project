@@ -1,5 +1,5 @@
-import { FC, ReactNode } from "react";
-import { HeaderRoot, HeaderContent } from "./style";
+import type { FC, ReactNode } from "react";
+import { HeaderContent, HeaderRoot } from "./style";
 
 export interface IHeaderProps {
   children?: ReactNode;

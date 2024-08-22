@@ -1,4 +1,7 @@
-import {
+import { createModel } from "@rematch/core";
+import type { EResponseCode } from "~/lib/core/constants";
+import httpReq from "~/lib/core/helpers/httpReq";
+import type {
   TCheckoutResponse,
   TCreateCartResponse,
   TDeleteCartItemResponse,
@@ -7,10 +10,7 @@ import {
   TReqBodyUpdateCartItemQty,
   TUpdateCartItemQtyResponse,
 } from "~/packages/cafenerd/server/controllers/v1/carts/type";
-import { IRootModel } from ".";
-import { createModel } from "@rematch/core";
-import httpReq from "~/lib/core/helpers/httpReq";
-import { EResponseCode } from "~/lib/core/constants";
+import type { IRootModel } from ".";
 
 export interface ICartState {
   cartItems: TGetCartItemsByUserResponse["data"]["cartItems"];
@@ -58,16 +58,13 @@ const Cart = createModel<IRootModel>()({
       onSuccess?: () => void;
     }) {
       try {
-        await httpReq<TCreateCartResponse, TReqBodyCreateCart>(
-          `/api/v1/carts/cart-items`,
-          {
-            method: "POST",
-            data: {
-              productId,
-              quantity,
-            },
-          }
-        );
+        await httpReq<TCreateCartResponse, TReqBodyCreateCart>("/api/v1/carts/cart-items", {
+          method: "POST",
+          data: {
+            productId,
+            quantity,
+          },
+        });
 
         if (onSuccess) onSuccess();
       } catch (err) {
@@ -78,10 +75,10 @@ const Cart = createModel<IRootModel>()({
     async fetchCartItems() {
       try {
         const { response } = await httpReq<TGetCartItemsByUserResponse>(
-          `/api/v1/carts/cart-items`,
+          "/api/v1/carts/cart-items",
           {
             method: "GET",
-          }
+          },
         );
 
         if (response.data) {
@@ -109,7 +106,7 @@ const Cart = createModel<IRootModel>()({
             data: {
               quantity,
             },
-          }
+          },
         );
 
         dispatch.cart.fetchCartItems();
@@ -120,12 +117,9 @@ const Cart = createModel<IRootModel>()({
     },
     async deleteCartItem(id: number) {
       try {
-        await httpReq<TDeleteCartItemResponse>(
-          `/api/v1/carts/cart-items/${id}`,
-          {
-            method: "DELETE",
-          }
-        );
+        await httpReq<TDeleteCartItemResponse>(`/api/v1/carts/cart-items/${id}`, {
+          method: "DELETE",
+        });
 
         dispatch.cart.fetchCartItems();
       } catch (err) {
@@ -135,12 +129,12 @@ const Cart = createModel<IRootModel>()({
     },
     async checkoutCart(payload?: { onSuccess?: () => void }) {
       try {
-        await httpReq<TCheckoutResponse>(`/api/v1/carts/checkout`, {
+        await httpReq<TCheckoutResponse>("/api/v1/carts/checkout", {
           method: "POST",
         });
 
         dispatch.cart.fetchCartItems();
-        if (payload && payload.onSuccess) payload.onSuccess();
+        if (payload?.onSuccess) payload.onSuccess();
       } catch (err) {
         const error = err.response as ApiError<EResponseCode>;
         dispatch.app.saveError({ code: error.code, message: error.message });

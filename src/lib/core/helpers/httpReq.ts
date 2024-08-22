@@ -1,8 +1,8 @@
 import axios, {
-  AxiosError,
-  AxiosRequestConfig,
-  AxiosResponse,
-  Method,
+  type AxiosError,
+  type AxiosRequestConfig,
+  type AxiosResponse,
+  type Method,
 } from "axios";
 import { CONFIGURATION } from "~/lib/client/constants";
 
@@ -18,16 +18,14 @@ interface IResponse<T> {
 
 export default function httpReq<
   Response = Record<string, unknown>,
-  Request = Record<string, unknown>
+  Request = Record<string, unknown>,
 >(url: string, config: IHttpConfig<Request>): Promise<IResponse<Response>> {
   return new Promise<IResponse<Response>>((resolve, reject) => {
     const newConfig = {
       ...config,
       withCredentials: true,
       headers: {
-        "Accept-Language":
-          localStorage.getItem(CONFIGURATION.LOCAL_STORAGE_LOCALE_KEY) ||
-          "id-ID",
+        "Accept-Language": localStorage.getItem(CONFIGURATION.LOCAL_STORAGE_LOCALE_KEY) || "id-ID",
       },
     };
 

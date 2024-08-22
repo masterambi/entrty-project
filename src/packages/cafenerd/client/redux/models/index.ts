@@ -1,7 +1,7 @@
-import { Models } from "@rematch/core";
-import Product from "./product";
-import Cart from "./cart";
+import type { Models } from "@rematch/core";
 import App from "./app";
+import Cart from "./cart";
+import Product from "./product";
 
 export interface IRootModel extends Models<IRootModel> {
   app: typeof App;

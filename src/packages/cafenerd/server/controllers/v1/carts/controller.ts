@@ -1,15 +1,8 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  Middleware,
-  Post,
-  Put,
-} from "@overnightjs/core";
-import { Request, Response } from "express";
-import * as CatsService from "./service";
+import { Controller, Delete, Get, Middleware, Post, Put } from "@overnightjs/core";
+import type { Request, Response } from "express";
 import { EResponseCode } from "~/lib/core/constants";
 import logger from "~/lib/core/helpers/logger";
+import * as CatsService from "./service";
 import {
   createCartValidator,
   deleteCartItemValidator,
@@ -17,7 +10,7 @@ import {
   updateCartItemQtyParamsValidator,
 } from "./validator";
 
-import {
+import type {
   IResBodyCheckout,
   IResBodyCreateCart,
   IResBodyDeleteCartItem,
@@ -74,7 +67,7 @@ class CartsController {
       const { error, data } = response;
 
       if (error === "cart_empty") {
-        return res.apiError<any>({
+        return res.apiError<EResponseCode>({
           status: 400,
           message: "Cart items is empty",
           code: EResponseCode.CART_EMPTY,
@@ -82,7 +75,7 @@ class CartsController {
       }
 
       if (error === "product_not_found") {
-        return res.apiError<any>({
+        return res.apiError<EResponseCode>({
           status: 404,
           message: "Product is not found",
           code: EResponseCode.NOT_FOUND,
@@ -90,7 +83,7 @@ class CartsController {
       }
 
       if (error === "stock_not_enough") {
-        return res.apiError<any>({
+        return res.apiError<EResponseCode>({
           status: 400,
           message: "Product stock is not enough",
           code: EResponseCode.PRODUCT_STOCK_NOT_ENOUGH,
@@ -119,14 +112,11 @@ class CartsController {
 
   @Post("cart-items")
   @Middleware(createCartValidator)
-  protected async createCart(
-    req: Request<unknown, unknown, TReqBodyCreateCart>,
-    res: Response
-  ) {
+  protected async createCart(req: Request<unknown, unknown, TReqBodyCreateCart>, res: Response) {
     try {
       const { productId, quantity } = req.body;
 
-      logger.info(req.body, `Carts Controller - createCart with params: `);
+      logger.info(req.body, "Carts Controller - createCart with params: ");
 
       const response = await CatsService.createCart({
         productId: productId,
@@ -175,17 +165,10 @@ class CartsController {
   }
 
   @Put("cart-items/:cartItemId")
-  @Middleware([
-    updateCartItemQtyParamsValidator,
-    updateCartItemQtyBodyValidator,
-  ])
+  @Middleware([updateCartItemQtyParamsValidator, updateCartItemQtyBodyValidator])
   protected async updateCartItemQty(
-    req: Request<
-      TReqParamsUpdateCartItemQty,
-      unknown,
-      TReqBodyUpdateCartItemQty
-    >,
-    res: Response
+    req: Request<TReqParamsUpdateCartItemQty, unknown, TReqBodyUpdateCartItemQty>,
+    res: Response,
   ) {
     try {
       const { quantity } = req.body;
@@ -196,10 +179,7 @@ class CartsController {
         cartItemId: req.params.cartItemId,
       };
 
-      logger.info(
-        serviceParams,
-        `Carts Controller - updateCartItemQty with params: `
-      );
+      logger.info(serviceParams, "Carts Controller - updateCartItemQty with params: ");
 
       const response = await CatsService.updateCartItemQty({
         cartItemId: cartItemId,
@@ -249,17 +229,11 @@ class CartsController {
 
   @Delete("cart-items/:cartItemId")
   @Middleware(deleteCartItemValidator)
-  protected async deleteCartItem(
-    req: Request<TReqParamsDeleteCartItem>,
-    res: Response
-  ) {
+  protected async deleteCartItem(req: Request<TReqParamsDeleteCartItem>, res: Response) {
     try {
       const { cartItemId } = req.params;
 
-      logger.info(
-        req.params,
-        `Carts Controller - deleteCartItem with params: `
-      );
+      logger.info(req.params, "Carts Controller - deleteCartItem with params: ");
 
       const response = await CatsService.deleteCartItem({
         cart_id: Number(cartItemId) || -1,

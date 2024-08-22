@@ -1,9 +1,9 @@
 // src/models/products.ts
 import { createModel } from "@rematch/core";
-import { IRootModel } from ".";
-import { TGetProductListResponse } from "~/packages/cafenerd/server/controllers/v1/products/type";
+import type { EResponseCode } from "~/lib/core/constants";
 import httpReq from "~/lib/core/helpers/httpReq";
-import { EResponseCode } from "~/lib/core/constants";
+import type { TGetProductListResponse } from "~/packages/cafenerd/server/controllers/v1/products/type";
+import type { IRootModel } from ".";
 
 export interface IProductsState {
   productList: TGetProductListResponse["data"]["products"];
@@ -27,10 +27,9 @@ const Product = createModel<IRootModel>()({
   effects: (dispatch) => ({
     async fetchProductList() {
       try {
-        const { response } = await httpReq<TGetProductListResponse>(
-          `/api/v1/products`,
-          { method: "GET" }
-        );
+        const { response } = await httpReq<TGetProductListResponse>("/api/v1/products", {
+          method: "GET",
+        });
         if (response.data) {
           dispatch.product.setProductList(response.data.products);
         }

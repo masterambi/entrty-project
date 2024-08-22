@@ -1,4 +1,4 @@
-import { z, ZodError } from "zod";
+import { ZodError, type z } from "zod";
 
 const validateSchema = <T extends z.AnyZodObject, D>(schema: T, data: D) => {
   try {

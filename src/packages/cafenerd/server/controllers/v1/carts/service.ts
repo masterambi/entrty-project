@@ -1,25 +1,18 @@
 import logger from "~/lib/core/helpers/logger";
-import Cart, {
-  ICartCreationAttributes,
-} from "../../../database/models/mysql/CartItem";
-import Product from "../../../database/models/mysql/Product";
 import Connection from "~/lib/server/connection";
+import Cart, { type ICartCreationAttributes } from "../../../database/models/mysql/CartItem";
+import Product from "../../../database/models/mysql/Product";
 
 interface ICreateCartParams extends ICartCreationAttributes {}
 interface ICreateCartReturn {
   data?: Cart;
   error?: "product_not_found" | "stock_not_enough" | "general_error";
 }
-export const createCart = async (
-  params: ICreateCartParams
-): Promise<ICreateCartReturn> => {
+export const createCart = async (params: ICreateCartParams): Promise<ICreateCartReturn> => {
   try {
     const { productId, userId, quantity } = params;
 
-    logger.info(
-      { productId, userId, quantity },
-      "Carts Service - createCart Params: "
-    );
+    logger.info({ productId, userId, quantity }, "Carts Service - createCart Params: ");
 
     const product = await Product.findByPk(productId);
     if (!product) return { error: "product_not_found" };
@@ -62,7 +55,7 @@ interface IGetCartItemsByUserReturn {
   error?: "general_error";
 }
 export const getCartItemsByUser = async (
-  params: IGetCartItemsByUserParams
+  params: IGetCartItemsByUserParams,
 ): Promise<IGetCartItemsByUserReturn> => {
   try {
     const { userId } = params;
@@ -80,16 +73,15 @@ export const getCartItemsByUser = async (
 
     const total = carts.reduce(
       (total, cart) => {
-        const tempTotalPrice = (total.totalPrice +=
-          cart.quantity * cart.product.price);
-        const tempTotalItem = (total.totalItems += cart.quantity);
+        const tempTotalPrice = total.totalPrice + cart.quantity * cart.product.price;
+        const tempTotalItem = total.totalItems + cart.quantity;
 
         return {
           totalPrice: tempTotalPrice,
           totalItems: tempTotalItem,
         };
       },
-      { totalPrice: 0, totalItems: 0 }
+      { totalPrice: 0, totalItems: 0 },
     );
 
     return {
@@ -100,10 +92,7 @@ export const getCartItemsByUser = async (
       },
     };
   } catch (err) {
-    logger.error(
-      err.message || err,
-      "Carts Service - getCartItemsByUser Error: "
-    );
+    logger.error(err.message || err, "Carts Service - getCartItemsByUser Error: ");
     return { error: "general_error" };
   }
 };
@@ -118,14 +107,11 @@ interface IUpdateCartItemQtyReturn {
   error?: "cart_item_not_found" | "stock_not_enough" | "general_error";
 }
 export const updateCartItemQty = async (
-  params: IUpdateCartItemQtyParams
+  params: IUpdateCartItemQtyParams,
 ): Promise<IUpdateCartItemQtyReturn> => {
   try {
     const { cartItemId, userId, quantity } = params;
-    logger.info(
-      { cartItemId, userId, quantity },
-      "Carts Service - updateCartItemQty Params: "
-    );
+    logger.info({ cartItemId, userId, quantity }, "Carts Service - updateCartItemQty Params: ");
 
     const cart = await Cart.findOne({
       where: {
@@ -145,17 +131,11 @@ export const updateCartItemQty = async (
 
     const updatedCart = await cart.save();
 
-    logger.info(
-      updatedCart.toJSON(),
-      "Carts Service - updateCartItemQty Data: "
-    );
+    logger.info(updatedCart.toJSON(), "Carts Service - updateCartItemQty Data: ");
 
     return { data: updatedCart };
   } catch (err) {
-    logger.error(
-      err.message || err,
-      "Carts Service - updateCartItemQty Error: "
-    );
+    logger.error(err.message || err, "Carts Service - updateCartItemQty Error: ");
     return { error: "general_error" };
   }
 };
@@ -169,7 +149,7 @@ interface IDeleteCartItemReturn {
   error?: "cart_item_not_found" | "general_error";
 }
 export const deleteCartItem = async (
-  params: IDeleteCartItemParams
+  params: IDeleteCartItemParams,
 ): Promise<IDeleteCartItemReturn> => {
   try {
     const { cart_id, userId } = params;
@@ -198,15 +178,9 @@ interface ICheckoutParams {
 }
 interface ICheckoutReturn {
   data?: { message: string };
-  error?:
-    | "cart_empty"
-    | "product_not_found"
-    | "stock_not_enough"
-    | "general_error";
+  error?: "cart_empty" | "product_not_found" | "stock_not_enough" | "general_error";
 }
-export const checkout = async (
-  params: ICheckoutParams
-): Promise<ICheckoutReturn> => {
+export const checkout = async (params: ICheckoutParams): Promise<ICheckoutReturn> => {
   const { userId } = params;
   logger.info({ userId }, "Carts Service - checkout Params: ");
   const db = Connection.getMysqlInstance();
@@ -254,11 +228,8 @@ export const checkout = async (
 
     await Promise.all(
       productUpdates.map((update) =>
-        Product.update(
-          { stock: update.stock },
-          { where: { id: update.id }, transaction: t }
-        )
-      )
+        Product.update({ stock: update.stock }, { where: { id: update.id }, transaction: t }),
+      ),
     );
 
     await Cart.destroy({ where: { userId }, transaction: t });

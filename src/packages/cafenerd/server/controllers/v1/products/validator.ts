@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
+import { z } from "zod";
 import { EResponseCode } from "~/lib/core/constants";
 import logger from "~/lib/core/helpers/logger";
 import validateSchema from "~/lib/core/helpers/validateSchema";
-import { z } from "zod";
 
 export const createProductSchema = z.object({
   name: z.string(),
@@ -11,16 +11,9 @@ export const createProductSchema = z.object({
   stock: z.number(),
   imageUrl: z.string(),
 });
-export const createProductValidator = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const createProductValidator = async (req: Request, res: Response, next: NextFunction) => {
   const { errMsg, isError } = validateSchema(createProductSchema, req.body);
-  logger.info(
-    errMsg,
-    "Application Middleware - createProductValidator Err Msg: "
-  );
+  logger.info(errMsg, "Application Middleware - createProductValidator Err Msg: ");
 
   if (isError) {
     res.apiError<EResponseCode>({
@@ -39,16 +32,10 @@ export const getProductDetailsParamsSchema = z.object({
 export const getProductDetailsValidator = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
-  const { errMsg, isError } = validateSchema(
-    getProductDetailsParamsSchema,
-    req.params
-  );
-  logger.info(
-    errMsg,
-    "Application Middleware - createProductValidator Err Msg: "
-  );
+  const { errMsg, isError } = validateSchema(getProductDetailsParamsSchema, req.params);
+  logger.info(errMsg, "Application Middleware - createProductValidator Err Msg: ");
 
   if (isError) {
     res.apiError<EResponseCode>({

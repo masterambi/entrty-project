@@ -1,5 +1,5 @@
-import { FC, ReactNode } from "react";
 import { Layout } from "antd";
+import type { FC, ReactNode } from "react";
 import { Actions, NavBarTitle } from "./style";
 
 interface INavBarProps {

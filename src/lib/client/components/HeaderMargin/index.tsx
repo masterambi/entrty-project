@@ -1,8 +1,8 @@
-import React, { FC } from "react";
+import React, { type FC } from "react";
 import { HeaderMarginStyled } from "./style";
 
 const HeaderMargin: FC = () => {
-  return <HeaderMarginStyled></HeaderMarginStyled>;
+  return <HeaderMarginStyled />;
 };
 
 export default HeaderMargin;
