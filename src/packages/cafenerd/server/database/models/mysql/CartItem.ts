@@ -26,7 +26,7 @@ export interface ICartCreationAttributes
 
 @Table({
   tableName: "cart_items",
-  modelName: "cart_items",
+  modelName: "cart_item",
   freezeTableName: true,
   underscored: true,
   timestamps: true,

@@ -9,7 +9,10 @@ import type {
   IResBodyGetProductList,
   TReqBodyCreateProduct,
 } from "./type";
-import { createProductValidator, getProductDetailsValidator } from "./validator";
+import {
+  createProductValidator,
+  getProductDetailsValidator,
+} from "./validator";
 
 @Controller("products")
 class ProductsController {
@@ -51,7 +54,9 @@ class ProductsController {
     try {
       const { productId } = req.params;
 
-      logger.info(`Products Controller - getProductDetails with params: ${req.params}`);
+      logger.info(
+        `Products Controller - getProductDetails with params: ${req.params}`
+      );
 
       const response = await ProductService.getProductDetails({
         productId: productId,
@@ -93,12 +98,14 @@ class ProductsController {
   @Middleware(createProductValidator)
   protected async createProduct(
     req: Request<unknown, unknown, TReqBodyCreateProduct>,
-    res: Response,
+    res: Response
   ) {
     try {
       const { name, description, price, stock, imageUrl } = req.body;
 
-      logger.info(`Products Controller - createProduct with params: ${req.body}`);
+      logger.info(
+        `Products Controller - createProduct with params: ${req.body}`
+      );
 
       const response = await ProductService.createProduct({
         name,

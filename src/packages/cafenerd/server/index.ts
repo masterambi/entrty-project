@@ -7,6 +7,9 @@ import models from "./database/models/mysql";
 
 (async () => {
   try {
+    const status = await Connection.redisConnection(1).ping();
+    logger.info(`Redis ping status: ${status}`);
+
     const db = await Connection.mysqlConnection(models);
     if (db) {
       await db.authenticate();

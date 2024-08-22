@@ -12,16 +12,11 @@ type ApiError<E> = {
 };
 
 declare namespace Express {
-  // export interface Request {
-  //   user?: {
-  //     external_user_id: string;
-  //     uuid: string;
-  //     locale: "en-US" | "id-ID";
-  //   };
-  //   transaction?: {
-  //     token: string;
-  //   };
-  // }
+  export interface Request {
+    user?: {
+      id: string;
+    };
+  }
   export interface Response {
     apiSuccess: <T>(data?: ApiSuccess<T>) => void;
     apiError: <E>(data?: ApiError<E>) => void;
