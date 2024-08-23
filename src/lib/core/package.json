@@ -17,12 +17,14 @@
     "moment-timezone": "^0.5.45",
     "pino": "^9.3.2",
     "pino-pretty": "^11.2.2",
+    "uuid": "^10.0.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
     "@faker-js/faker": "^8.4.1",
     "@types/lodash.debounce": "^4.0.9",
+    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react-swc": "^3.7.0",
     "concurrently": "^8.2.2",
     "husky": "^9.1.4",

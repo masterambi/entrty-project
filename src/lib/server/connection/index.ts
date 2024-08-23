@@ -1,11 +1,37 @@
+import Redis, { type RedisOptions } from "ioredis";
 import { Sequelize, type SequelizeOptions } from "sequelize-typescript";
 import logger from "~/lib/core/helpers/logger";
 
 class Connection {
   private sequelize: Sequelize;
+  private redis: Redis;
+
+  getRedisInstance() {
+    return this.redis;
+  }
 
   getMysqlInstance() {
     return this.sequelize;
+  }
+
+  redisConnection(db?: number): Redis {
+    if (!this.redis) {
+      const options: RedisOptions = {
+        host: String(process.env.REDIS_HOST),
+        port: Number(process.env.REDIS_PORT || "6379"),
+        db,
+      };
+
+      if (process.env.NODE_ENV !== "development" && process.env.REDIS_PASSWORD) {
+        options.password = process.env.REDIS_PASSWORD;
+        options.tls = { rejectUnauthorized: true };
+      }
+
+      this.redis = new Redis(options);
+
+      return this.redis;
+    }
+    return this.redis;
   }
 
   async mysqlConnection(models: SequelizeOptions["models"]): Promise<Sequelize | null> {

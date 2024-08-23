@@ -7,22 +7,26 @@ import { CartItem } from "./components/CartItem";
 import CartItemLoading from "./components/CartItemLoading";
 import { CheckoutSection } from "./components/CheckoutSection";
 import { CartContainer, CartEmpty, CartItemsContent, CartPage } from "./style";
+import { Link } from "react-router-dom";
 
 const Cart = () => {
   const d = useDispatch<TDispatch>();
   const isLoadingCartItems = useSelector(
-    (state: TRootState) => state.loading.effects.cart.fetchCartItems,
+    (state: TRootState) => state.loading.effects.cart.fetchCartItems
   );
   const isLoadingCheckoutCart = useSelector(
-    (state: TRootState) => state.loading.effects.cart.checkoutCart,
+    (state: TRootState) => state.loading.effects.cart.checkoutCart
   );
   const isLoadingDeleteCart = useSelector(
-    (state: TRootState) => state.loading.effects.cart.deleteCartItem,
+    (state: TRootState) => state.loading.effects.cart.deleteCartItem
   );
   const isLoadingUpdateQty = useSelector(
-    (state: TRootState) => state.loading.effects.cart.updateCartItemQuantity,
+    (state: TRootState) => state.loading.effects.cart.updateCartItemQuantity
   );
-  const cartItems = useSelector((state: TRootState) => state.cart.cartItems, shallowEqual);
+  const cartItems = useSelector(
+    (state: TRootState) => state.cart.cartItems,
+    shallowEqual
+  );
   const totalPrice = useSelector((state: TRootState) => state.cart.totalPrice);
   const totalItems = useSelector((state: TRootState) => state.cart.totalItems);
   const err = useSelector((state: TRootState) => state.app.error, shallowEqual);
@@ -80,9 +84,11 @@ const Cart = () => {
         {isCartEmpty && (
           <CartEmpty>
             <Typography.Title level={2}>Cart is empty</Typography.Title>
-            <Button type="primary" size="large">
-              Start Shopping
-            </Button>
+            <Link to="/">
+              <Button type="primary" size="large">
+                Start Shopping
+              </Button>
+            </Link>
           </CartEmpty>
         )}
         {!isCartEmpty && (

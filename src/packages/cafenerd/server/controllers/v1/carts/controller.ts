@@ -10,6 +10,7 @@ import {
   updateCartItemQtyParamsValidator,
 } from "./validator";
 
+import checkToken from "../../../middlewares/checkToken";
 import type {
   IResBodyCheckout,
   IResBodyCreateCart,
@@ -25,11 +26,18 @@ import type {
 @Controller("carts")
 class CartsController {
   @Get("cart-items")
+  @Middleware([checkToken])
   protected async getCartItemsByUser(req: Request, res: Response) {
     try {
-      const response = await CatsService.getCartItemsByUser({
-        userId: 1,
-      });
+      const userId = req.user?.id;
+
+      const params = {
+        userId: userId as string,
+      };
+
+      logger.info(params, "Carts Controller - getCartItemsByUser with params: ");
+
+      const response = await CatsService.getCartItemsByUser(params);
 
       logger.info(response, "Carts Controller - getCartItemsByUser Data: ");
 
@@ -56,11 +64,18 @@ class CartsController {
   }
 
   @Post("checkout")
+  @Middleware([checkToken])
   protected async checkout(req: Request, res: Response) {
     try {
-      const response = await CatsService.checkout({
-        userId: 1,
-      });
+      const userId = req.user?.id;
+
+      const params = {
+        userId: userId as string,
+      };
+
+      logger.info(params, "Carts Controller - checkout with params: ");
+
+      const response = await CatsService.checkout(params);
 
       logger.info(response, "Carts Controller - checkout Data: ");
 
@@ -111,18 +126,21 @@ class CartsController {
   }
 
   @Post("cart-items")
-  @Middleware(createCartValidator)
+  @Middleware([createCartValidator, checkToken])
   protected async createCart(req: Request<unknown, unknown, TReqBodyCreateCart>, res: Response) {
     try {
+      const userId = req.user?.id as string;
       const { productId, quantity } = req.body;
 
-      logger.info(req.body, "Carts Controller - createCart with params: ");
+      const params = {
+        userId: +userId,
+        productId,
+        quantity,
+      };
 
-      const response = await CatsService.createCart({
-        productId: productId,
-        userId: 1,
-        quantity: quantity,
-      });
+      logger.info(params, "Carts Controller - createCart with params: ");
+
+      const response = await CatsService.createCart(params);
 
       logger.info(response, "Carts Controller - createCart Data: ");
 
@@ -165,27 +183,25 @@ class CartsController {
   }
 
   @Put("cart-items/:cartItemId")
-  @Middleware([updateCartItemQtyParamsValidator, updateCartItemQtyBodyValidator])
+  @Middleware([updateCartItemQtyParamsValidator, updateCartItemQtyBodyValidator, checkToken])
   protected async updateCartItemQty(
     req: Request<TReqParamsUpdateCartItemQty, unknown, TReqBodyUpdateCartItemQty>,
     res: Response,
   ) {
     try {
+      const userId = req.user?.id as string;
       const { quantity } = req.body;
       const { cartItemId } = req.params;
 
-      const serviceParams = {
-        quantity: req.body.quantity,
-        cartItemId: req.params.cartItemId,
+      const params = {
+        userId: +userId,
+        quantity: quantity,
+        cartItemId: cartItemId,
       };
 
-      logger.info(serviceParams, "Carts Controller - updateCartItemQty with params: ");
+      logger.info(params, "Carts Controller - updateCartItemQty with params: ");
 
-      const response = await CatsService.updateCartItemQty({
-        cartItemId: cartItemId,
-        userId: 1,
-        quantity: quantity,
-      });
+      const response = await CatsService.updateCartItemQty(params);
 
       logger.info(response, "Carts Controller - updateCartItemQty Data: ");
 
@@ -228,17 +244,20 @@ class CartsController {
   }
 
   @Delete("cart-items/:cartItemId")
-  @Middleware(deleteCartItemValidator)
+  @Middleware([deleteCartItemValidator, checkToken])
   protected async deleteCartItem(req: Request<TReqParamsDeleteCartItem>, res: Response) {
     try {
+      const userId = req.user?.id as string;
       const { cartItemId } = req.params;
+
+      const params = {
+        cartItemId: +cartItemId,
+        userId: +userId,
+      };
 
       logger.info(req.params, "Carts Controller - deleteCartItem with params: ");
 
-      const response = await CatsService.deleteCartItem({
-        cart_id: Number(cartItemId) || -1,
-        userId: 1,
-      });
+      const response = await CatsService.deleteCartItem(params);
 
       logger.info(response, "Carts Controller - deleteCartItem Data: ");
 

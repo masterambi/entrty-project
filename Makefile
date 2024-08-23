@@ -26,5 +26,7 @@ seeder_up_all:
 seeder_down_all:
 	PACKAGE=${package} npx sequelize-cli db:seed:undo:all
 
+create_redis:
+	docker run -d --name redis7 -h 127.0.0.1 -p 6379:6379 redis:7.0
 create_mysql: 
 	docker run -d --name mysql8 -p 6666:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8

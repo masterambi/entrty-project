@@ -1,11 +1,11 @@
 import logger from "~/lib/core/helpers/logger";
 import Connection from "~/lib/server/connection";
-import Cart, { type ICartCreationAttributes } from "../../../database/models/mysql/CartItem";
+import CartItem, { type ICartCreationAttributes } from "../../../database/models/mysql/CartItem";
 import Product from "../../../database/models/mysql/Product";
 
 interface ICreateCartParams extends ICartCreationAttributes {}
 interface ICreateCartReturn {
-  data?: Cart;
+  data?: CartItem;
   error?: "product_not_found" | "stock_not_enough" | "general_error";
 }
 export const createCart = async (params: ICreateCartParams): Promise<ICreateCartReturn> => {
@@ -21,7 +21,7 @@ export const createCart = async (params: ICreateCartParams): Promise<ICreateCart
       return { error: "stock_not_enough" };
     }
 
-    const [cart, isCreated] = await Cart.findOrCreate({
+    const [cart, isCreated] = await CartItem.findOrCreate({
       where: {
         userId,
         productId,
@@ -48,10 +48,10 @@ export const createCart = async (params: ICreateCartParams): Promise<ICreateCart
 };
 
 interface IGetCartItemsByUserParams {
-  userId: number;
+  userId: string;
 }
 interface IGetCartItemsByUserReturn {
-  data?: { cartItems: Cart[]; totalPrice: number; totalItems: number };
+  data?: { cartItems: CartItem[]; totalPrice: number; totalItems: number };
   error?: "general_error";
 }
 export const getCartItemsByUser = async (
@@ -62,7 +62,7 @@ export const getCartItemsByUser = async (
 
     logger.info({ userId }, "Carts Service - getCartItemsByUser Params: ");
 
-    const carts = await Cart.findAll({
+    const carts = await CartItem.findAll({
       where: { userId },
       order: [["id", "DESC"]],
       include: {
@@ -103,7 +103,7 @@ interface IUpdateCartItemQtyParams {
   quantity: number;
 }
 interface IUpdateCartItemQtyReturn {
-  data?: Cart;
+  data?: CartItem;
   error?: "cart_item_not_found" | "stock_not_enough" | "general_error";
 }
 export const updateCartItemQty = async (
@@ -113,7 +113,7 @@ export const updateCartItemQty = async (
     const { cartItemId, userId, quantity } = params;
     logger.info({ cartItemId, userId, quantity }, "Carts Service - updateCartItemQty Params: ");
 
-    const cart = await Cart.findOne({
+    const cart = await CartItem.findOne({
       where: {
         id: cartItemId,
         userId,
@@ -141,7 +141,7 @@ export const updateCartItemQty = async (
 };
 
 interface IDeleteCartItemParams {
-  cart_id: number;
+  cartItemId: number;
   userId: number;
 }
 interface IDeleteCartItemReturn {
@@ -152,12 +152,12 @@ export const deleteCartItem = async (
   params: IDeleteCartItemParams,
 ): Promise<IDeleteCartItemReturn> => {
   try {
-    const { cart_id, userId } = params;
-    logger.info({ cart_id, userId }, "Carts Service - deleteCartItem Params: ");
+    const { cartItemId, userId } = params;
+    logger.info({ cartItemId, userId }, "Carts Service - deleteCartItem Params: ");
 
-    const record = await Cart.destroy({
+    const record = await CartItem.destroy({
       where: {
-        id: cart_id,
+        id: cartItemId,
         userId,
       },
     });
@@ -174,7 +174,7 @@ export const deleteCartItem = async (
 };
 
 interface ICheckoutParams {
-  userId: number;
+  userId: string;
 }
 interface ICheckoutReturn {
   data?: { message: string };
@@ -187,7 +187,7 @@ export const checkout = async (params: ICheckoutParams): Promise<ICheckoutReturn
   const t = await db.transaction();
 
   try {
-    const carts = await Cart.findAll({
+    const carts = await CartItem.findAll({
       where: { userId },
       lock: t.LOCK.UPDATE,
       transaction: t,
@@ -232,7 +232,7 @@ export const checkout = async (params: ICheckoutParams): Promise<ICheckoutReturn
       ),
     );
 
-    await Cart.destroy({ where: { userId }, transaction: t });
+    await CartItem.destroy({ where: { userId }, transaction: t });
 
     await t.commit();
 
