@@ -14,10 +14,11 @@ This entry project is just for learning techstacks and code patterns purpose.
 1. Clone the repo into your environment
 2. Run `cp config/env/cafenerd/.template.env config/env/cafenerd/.env`
 3. Run `make create_mysql` (Optional)
-4. Run `npm install`
-5. Run `make db_create package=cafenerd`
-6. Run `make migration_up package=cafenerd`
-7. run `make seeder_up_all package=cafenerd`
+4. Run `make create_redis` (Optional)
+5. Run `npm install`
+6. Run `make db_create package=cafenerd`
+7. Run `make migration_up package=cafenerd`
+8. run `make seeder_up_all package=cafenerd`
 
 # How to Run
 
@@ -39,4 +40,16 @@ Please refresh the page if you got an error when running the project for the fir
 
 ```
 npm run start package=cafenerd
+```
+
+# Manual Testing
+
+I haven't implemented the sign up feature yet, so you need to use these credentials to log in:
+
+```
+email: customer@mail.com
+password: Pass12345
+
+email: admin@mail.com
+password: Pass12345
 ```

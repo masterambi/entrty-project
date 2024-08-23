@@ -9,3 +9,8 @@ export type TSignupResponse = ApiSuccess<IResBodySignup>;
 export interface IResBodyLogin extends User {}
 export type TReqBodyLogin = z.infer<typeof loginSchema>;
 export type TLoginResponse = ApiSuccess<IResBodyLogin>;
+
+export interface IResBodySign {
+  id: number;
+}
+export type TSignResponse = ApiSuccess<IResBodySign>;

@@ -9,6 +9,7 @@ import {
   Table,
   BeforeSave,
   Default,
+  Unique,
 } from "sequelize-typescript";
 import * as bcrypt from "bcrypt";
 
@@ -44,6 +45,7 @@ class User extends Model<IUserAttributes, IUserCreationAttributes> {
   declare id: number;
 
   @AllowNull(false)
+  @Unique
   @Column(DataType.STRING)
   declare email: string;
 

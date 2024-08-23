@@ -1,4 +1,4 @@
-import { Controller, Post, Middleware } from "@overnightjs/core";
+import { Controller, Post, Middleware, Get } from "@overnightjs/core";
 import type { Request, Response } from "express";
 import { EResponseCode } from "~/lib/core/constants";
 import logger from "~/lib/core/helpers/logger";
@@ -9,11 +9,13 @@ import type {
   IResBodyLogin,
   TReqBodySignup,
   TReqBodyLogin,
+  IResBodySign,
 } from "./type";
 import { signupValidator, loginValidator } from "./validator";
 import { CONFIGURATION } from "../../../constant";
 import { generateToken } from "~/lib/server/helpers/jwtToken";
 import { saveSessionData } from "../../../services/redis";
+import checkToken from "../../../middlewares/checkToken";
 
 @Controller("auth")
 class AuthController {
@@ -116,6 +118,32 @@ class AuthController {
       });
     } catch (e) {
       logger.error(e.message || e, "Auth Controller: login: ");
+      return res.apiError<EResponseCode>({
+        status: 500,
+        code: EResponseCode.GENERAL_ERROR,
+        message: "error_internal_server_message",
+      });
+    }
+  }
+
+  @Get("sign")
+  @Middleware([checkToken])
+  protected async sign(req: Request, res: Response) {
+    try {
+      const userId = req.user?.id as string;
+
+      logger.info(`Auth Controller - sign with params: ${{ userId }}`);
+
+      return res.apiSuccess<IResBodySign>({
+        status: 200,
+        message: "Sign successful",
+        code: EResponseCode.GET_DATA_SUCCESS,
+        data: {
+          id: +userId,
+        },
+      });
+    } catch (e) {
+      logger.error(e.message || e, "CartsController: sign: ");
       return res.apiError<EResponseCode>({
         status: 500,
         code: EResponseCode.GENERAL_ERROR,

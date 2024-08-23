@@ -41,15 +41,15 @@ export default async function (param: ConfigEnv): Promise<UserConfig> {
     },
     plugins: [
       reactSWC(),
-      fontInjector({
-        cdnFontList: [
-          "https://cdn.jsdelivr.net/npm/font-proxima-nova@1.0.1/fonts/ProximaNova-Light.ttf",
-          "https://cdn.jsdelivr.net/npm/font-proxima-nova@1.0.1/fonts/ProximaNova-Regular.ttf",
-          "https://cdn.jsdelivr.net/npm/font-proxima-nova@1.0.1/fonts/ProximaNova-Semibold.ttf",
-          "https://cdn.jsdelivr.net/npm/font-proxima-nova@1.0.1/fonts/ProximaNova-Bold.ttf",
-          "https://cdn.jsdelivr.net/npm/font-proxima-nova@1.0.1/fonts/ProximaNova-Extrabld.ttf",
-        ],
-      }),
+      // fontInjector({
+      //   cdnFontList: [
+      //     "https://cdn.jsdelivr.net/npm/font-proxima-nova@1.0.1/fonts/ProximaNova-Light.ttf",
+      //     "https://cdn.jsdelivr.net/npm/font-proxima-nova@1.0.1/fonts/ProximaNova-Regular.ttf",
+      //     "https://cdn.jsdelivr.net/npm/font-proxima-nova@1.0.1/fonts/ProximaNova-Semibold.ttf",
+      //     "https://cdn.jsdelivr.net/npm/font-proxima-nova@1.0.1/fonts/ProximaNova-Bold.ttf",
+      //     "https://cdn.jsdelivr.net/npm/font-proxima-nova@1.0.1/fonts/ProximaNova-Extrabld.ttf",
+      //   ],
+      // }),
     ],
     json: {
       stringify: true,

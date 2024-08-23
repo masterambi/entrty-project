@@ -1,4 +1,4 @@
-import { type DefaultTheme, createGlobalStyle } from "styled-components";
+import { createGlobalStyle, DefaultTheme } from "styled-components";
 
 export const GlobalStyles = createGlobalStyle`
   html, body {
