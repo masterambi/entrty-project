@@ -1,5 +1,5 @@
-import { Sequelize, type SequelizeOptions } from "sequelize-typescript";
 import Redis, { type RedisOptions } from "ioredis";
+import { Sequelize, type SequelizeOptions } from "sequelize-typescript";
 import logger from "~/lib/core/helpers/logger";
 
 class Connection {
@@ -22,10 +22,7 @@ class Connection {
         db,
       };
 
-      if (
-        process.env.NODE_ENV !== "development" &&
-        process.env.REDIS_PASSWORD
-      ) {
+      if (process.env.NODE_ENV !== "development" && process.env.REDIS_PASSWORD) {
         options.password = process.env.REDIS_PASSWORD;
         options.tls = { rejectUnauthorized: true };
       }
@@ -37,9 +34,7 @@ class Connection {
     return this.redis;
   }
 
-  async mysqlConnection(
-    models: SequelizeOptions["models"]
-  ): Promise<Sequelize | null> {
+  async mysqlConnection(models: SequelizeOptions["models"]): Promise<Sequelize | null> {
     try {
       if (!this.sequelize) {
         this.sequelize = new Sequelize({

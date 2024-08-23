@@ -1,8 +1,8 @@
-import type { Request, Response, NextFunction } from "express";
-import logger from "~/lib/core/helpers/logger";
-import { CONFIGURATION } from "../constant";
+import type { NextFunction, Request, Response } from "express";
 import { EResponseCode } from "~/lib/core/constants";
+import logger from "~/lib/core/helpers/logger";
 import { verifyToken } from "~/lib/server/helpers/jwtToken";
+import { CONFIGURATION } from "../constant";
 import { getSessionData } from "../services/redis";
 
 const checkToken = async (req: Request, res: Response, next: NextFunction) => {

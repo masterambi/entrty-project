@@ -1,4 +1,4 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt, { type JwtPayload } from "jsonwebtoken";
 import moment from "moment-timezone";
 
 import logger from "~/lib/core/helpers/logger";
@@ -24,7 +24,7 @@ export const generateToken = ({
         nbf: moment().unix(),
         iat: moment().unix(),
       },
-      secretKey
+      secretKey,
     );
     logger.info("Lib/Helper - Generate Token JWT Sign: ");
     logger.info(accessToken);

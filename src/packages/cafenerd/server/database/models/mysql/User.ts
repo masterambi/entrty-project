@@ -1,17 +1,17 @@
+import * as bcrypt from "bcrypt";
 import type { Optional } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
+  BeforeSave,
   Column,
   DataType,
+  Default,
   Model,
   PrimaryKey,
   Table,
-  BeforeSave,
-  Default,
   Unique,
 } from "sequelize-typescript";
-import * as bcrypt from "bcrypt";
 
 export interface IUserAttributes {
   id: number;
@@ -24,10 +24,7 @@ export interface IUserAttributes {
 }
 
 export interface IUserCreationAttributes
-  extends Optional<
-    IUserAttributes,
-    "id" | "createdAt" | "updatedAt" | "role"
-  > {}
+  extends Optional<IUserAttributes, "id" | "createdAt" | "updatedAt" | "role"> {}
 
 @Table({
   tableName: "users",
@@ -71,8 +68,7 @@ class User extends Model<IUserAttributes, IUserCreationAttributes> {
   }
 
   toJSON() {
-    const attributes: any = { ...this.get() };
-    delete attributes.password;
+    const { password, ...attributes } = this.get();
     return attributes;
   }
 }

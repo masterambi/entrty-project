@@ -1,6 +1,6 @@
 import type { z } from "zod";
 import type User from "~/packages/cafenerd/server/database/models/mysql/User";
-import type { signupSchema, loginSchema } from "./validator";
+import type { loginSchema, signupSchema } from "./validator";
 
 export interface IResBodySignup extends User {}
 export type TReqBodySignup = z.infer<typeof signupSchema>;

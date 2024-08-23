@@ -1,13 +1,13 @@
-import { FC, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import type { FormProps } from "antd";
 import { Button, Form, Input, Layout, Typography } from "antd";
-import NavBar from "../../components/NavBar";
+import { type FC, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { TDispatch } from "../../redux";
+import { useLocation, useNavigate } from "react-router-dom";
 import { EResponseCode } from "~/lib/core/constants";
+import NavBar from "../../components/NavBar";
+import type { TDispatch } from "../../redux";
 
-interface TLoginHistoryState {
+export interface TLoginHistoryState {
   redirect?: string;
 }
 
@@ -37,10 +37,7 @@ const Login: FC = () => {
     ]);
   };
 
-  const handleOnClickLogin: FormProps<TLoginField>["onFinish"] = ({
-    email,
-    password,
-  }) => {
+  const handleOnClickLogin: FormProps<TLoginField>["onFinish"] = ({ email, password }) => {
     d.app.login({
       email,
       password,
@@ -85,10 +82,7 @@ const Login: FC = () => {
             <Form.Item<TLoginField>
               label="Email"
               name="email"
-              rules={[
-                { required: true, message: "Please input your email!" },
-                { type: "email" },
-              ]}
+              rules={[{ required: true, message: "Please input your email!" }, { type: "email" }]}
             >
               <Input />
             </Form.Item>
@@ -96,9 +90,7 @@ const Login: FC = () => {
             <Form.Item<TLoginField>
               label="Password"
               name="password"
-              rules={[
-                { required: true, message: "Please input your password!" },
-              ]}
+              rules={[{ required: true, message: "Please input your password!" }]}
             >
               <Input.Password />
             </Form.Item>

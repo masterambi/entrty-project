@@ -9,11 +9,7 @@ export const signupSchema = z.object({
   password: z.string().min(8),
   name: z.string().min(2),
 });
-export const signupValidator = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const signupValidator = async (req: Request, res: Response, next: NextFunction) => {
   const { errMsg, isError } = validateSchema(signupSchema, req.body);
   logger.info(errMsg, "Application Middleware - signupValidator Err Msg: ");
 
@@ -32,11 +28,7 @@ export const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
 });
-export const loginValidator = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const loginValidator = async (req: Request, res: Response, next: NextFunction) => {
   const { errMsg, isError } = validateSchema(loginSchema, req.body);
   logger.info(errMsg, "Application Middleware - loginValidator Err Msg: ");
 

@@ -1,7 +1,7 @@
 import logger from "~/lib/core/helpers/logger";
 import connnection from "~/lib/server/connection";
 import { CONFIGURATION } from "../constant";
-import { ISessionData } from "../types";
+import type { ISessionData } from "../types";
 
 export const saveSessionData = async (jti: string) => {
   try {
@@ -14,16 +14,14 @@ export const saveSessionData = async (jti: string) => {
       key,
       JSON.stringify({ valid: true }),
       "EX",
-      CONFIGURATION.REDIS.USER.SESSION_DATA_TTL
+      CONFIGURATION.REDIS.USER.SESSION_DATA_TTL,
     );
   } catch (e) {
     logger.error(e?.message || e, "Service - Save Session Data Error: ");
   }
 };
 
-export const getSessionData = async (
-  jti: string
-): Promise<ISessionData | null> => {
+export const getSessionData = async (jti: string): Promise<ISessionData | null> => {
   try {
     const redis = connnection.getRedisInstance();
     const key = `${CONFIGURATION.REDIS.USER.SESSION_DATA_PREFIX}${jti}`;

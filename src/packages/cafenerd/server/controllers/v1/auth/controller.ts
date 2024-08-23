@@ -1,36 +1,31 @@
-import { Controller, Post, Middleware, Get } from "@overnightjs/core";
+import { Controller, Get, Middleware, Post } from "@overnightjs/core";
 import type { Request, Response } from "express";
+import { v4 as uuidv4 } from "uuid";
 import { EResponseCode } from "~/lib/core/constants";
 import logger from "~/lib/core/helpers/logger";
-import * as AuthService from "./service";
-import { v4 as uuidv4 } from "uuid";
-import type {
-  IResBodySignup,
-  IResBodyLogin,
-  TReqBodySignup,
-  TReqBodyLogin,
-  IResBodySign,
-} from "./type";
-import { signupValidator, loginValidator } from "./validator";
-import { CONFIGURATION } from "../../../constant";
 import { generateToken } from "~/lib/server/helpers/jwtToken";
-import { saveSessionData } from "../../../services/redis";
+import { CONFIGURATION } from "../../../constant";
 import checkToken from "../../../middlewares/checkToken";
+import { saveSessionData } from "../../../services/redis";
+import * as AuthService from "./service";
+import type {
+  IResBodyLogin,
+  IResBodySign,
+  IResBodySignup,
+  TReqBodyLogin,
+  TReqBodySignup,
+} from "./type";
+import { loginValidator, signupValidator } from "./validator";
 
 @Controller("auth")
 class AuthController {
   @Post("signup")
   @Middleware(signupValidator)
-  protected async signup(
-    req: Request<unknown, unknown, TReqBodySignup>,
-    res: Response
-  ) {
+  protected async signup(req: Request<unknown, unknown, TReqBodySignup>, res: Response) {
     try {
       const { email, password, name } = req.body;
 
-      logger.info(
-        `Auth Controller - signup with params: ${JSON.stringify(req.body)}`
-      );
+      logger.info(`Auth Controller - signup with params: ${JSON.stringify(req.body)}`);
 
       const response = await AuthService.signup({ email, password, name });
 
@@ -66,16 +61,11 @@ class AuthController {
 
   @Post("login")
   @Middleware(loginValidator)
-  protected async login(
-    req: Request<unknown, unknown, TReqBodyLogin>,
-    res: Response
-  ) {
+  protected async login(req: Request<unknown, unknown, TReqBodyLogin>, res: Response) {
     try {
       const { email, password } = req.body;
 
-      logger.info(
-        `Auth Controller - login with params: ${JSON.stringify(req.body)}`
-      );
+      logger.info(`Auth Controller - login with params: ${JSON.stringify(req.body)}`);
 
       const response = await AuthService.login({ email, password });
 
@@ -107,7 +97,7 @@ class AuthController {
       res.cookie(
         CONFIGURATION.COOKIE_ACCESS_TOKEN.NAME,
         accessToken,
-        CONFIGURATION.COOKIE_ACCESS_TOKEN.OPT
+        CONFIGURATION.COOKIE_ACCESS_TOKEN.OPT,
       );
 
       return res.apiSuccess<IResBodyLogin>({

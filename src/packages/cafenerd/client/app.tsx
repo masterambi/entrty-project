@@ -1,15 +1,15 @@
 import { ConfigProvider } from "antd";
 import React, { type FC, lazy, Suspense, useEffect } from "react";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Route, Routes, useLocation, useNavigate } from "react-router";
 import { ThemeProvider } from "styled-components";
 import { GlobalStyles } from "~/lib/client/components/LayoutApp";
-import AppLayout from "./components/AppLayout";
-import { THEMES } from "./constants/style";
-import { TDispatch, TRootState } from "./redux";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { EResponseCode } from "~/lib/core/constants";
-import Login from "./container/Login";
+import AppLayout from "./components/AppLayout";
 import RequireAuth from "./components/RequireAuth";
+import { THEMES } from "./constants/style";
+import Login from "./container/Login";
+import type { TDispatch, TRootState } from "./redux";
 
 const ProductList = lazy(() => import("./container/ProductList"));
 const Cart = lazy(() => import("./container/Cart"));
@@ -19,10 +19,7 @@ const App: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const error = useSelector(
-    (state: TRootState) => state.app.error,
-    shallowEqual
-  );
+  const error = useSelector((state: TRootState) => state.app.error, shallowEqual);
 
   const isUnauthorizedUserErr =
     error.code === EResponseCode.UNAUTHORIZED_REQUEST ||

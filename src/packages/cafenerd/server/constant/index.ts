@@ -1,4 +1,4 @@
-import { CookieOptions } from "express";
+import type { CookieOptions } from "express";
 
 const ACCESS_TOKEN_TTL = 60 * 60 * 6;
 export const CONFIGURATION = {

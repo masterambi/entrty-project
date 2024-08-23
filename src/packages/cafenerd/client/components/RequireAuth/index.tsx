@@ -1,8 +1,8 @@
-import React, { FC, ReactNode, useEffect } from "react";
-import type { TDispatch, TRootState } from "~/packages/cafenerd/client/redux";
+import React, { type FC, type ReactNode, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { TLoginHistoryState } from "../../container/Login";
+import type { TDispatch, TRootState } from "~/packages/cafenerd/client/redux";
+import type { TLoginHistoryState } from "../../container/Login";
 
 interface IRequireAuthBody {
   children?: ReactNode;

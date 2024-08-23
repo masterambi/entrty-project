@@ -1,13 +1,13 @@
 import { createModel } from "@rematch/core";
 import { notification } from "antd";
 import { EResponseCode } from "~/lib/core/constants";
-import type { IRootModel } from ".";
 import httpReq from "~/lib/core/helpers/httpReq";
-import {
+import type {
   TLoginResponse,
   TReqBodyLogin,
   TSignResponse,
 } from "~/packages/cafenerd/server/controllers/v1/auth/type";
+import type { IRootModel } from ".";
 
 export interface IAppState {
   error: {
@@ -70,16 +70,13 @@ export const App = createModel<IRootModel>()({
       onError?: (err: ApiError<EResponseCode>) => void;
     }) {
       try {
-        const { response } = await httpReq<TLoginResponse, TReqBodyLogin>(
-          "/api/v1/auth/login",
-          {
-            method: "POST",
-            data: {
-              email,
-              password,
-            },
-          }
-        );
+        const { response } = await httpReq<TLoginResponse, TReqBodyLogin>("/api/v1/auth/login", {
+          method: "POST",
+          data: {
+            email,
+            password,
+          },
+        });
 
         if (response.data) {
           dispatch.app.saveUser({ id: String(response.data.id) });

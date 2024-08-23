@@ -1,6 +1,6 @@
+import * as bcrypt from "bcrypt";
 import logger from "~/lib/core/helpers/logger";
 import User from "../../../database/models/mysql/User";
-import * as bcrypt from "bcrypt";
 
 interface ISignupParams {
   email: string;

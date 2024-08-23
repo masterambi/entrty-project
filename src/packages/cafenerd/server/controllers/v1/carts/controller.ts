@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  Middleware,
-  Post,
-  Put,
-} from "@overnightjs/core";
+import { Controller, Delete, Get, Middleware, Post, Put } from "@overnightjs/core";
 import type { Request, Response } from "express";
 import { EResponseCode } from "~/lib/core/constants";
 import logger from "~/lib/core/helpers/logger";
@@ -17,6 +10,7 @@ import {
   updateCartItemQtyParamsValidator,
 } from "./validator";
 
+import checkToken from "../../../middlewares/checkToken";
 import type {
   IResBodyCheckout,
   IResBodyCreateCart,
@@ -28,7 +22,6 @@ import type {
   TReqParamsDeleteCartItem,
   TReqParamsUpdateCartItemQty,
 } from "./type";
-import checkToken from "../../../middlewares/checkToken";
 
 @Controller("carts")
 class CartsController {
@@ -42,10 +35,7 @@ class CartsController {
         userId: userId as string,
       };
 
-      logger.info(
-        params,
-        "Carts Controller - getCartItemsByUser with params: "
-      );
+      logger.info(params, "Carts Controller - getCartItemsByUser with params: ");
 
       const response = await CatsService.getCartItemsByUser(params);
 
@@ -137,10 +127,7 @@ class CartsController {
 
   @Post("cart-items")
   @Middleware([createCartValidator, checkToken])
-  protected async createCart(
-    req: Request<unknown, unknown, TReqBodyCreateCart>,
-    res: Response
-  ) {
+  protected async createCart(req: Request<unknown, unknown, TReqBodyCreateCart>, res: Response) {
     try {
       const userId = req.user?.id as string;
       const { productId, quantity } = req.body;
@@ -196,18 +183,10 @@ class CartsController {
   }
 
   @Put("cart-items/:cartItemId")
-  @Middleware([
-    updateCartItemQtyParamsValidator,
-    updateCartItemQtyBodyValidator,
-    checkToken,
-  ])
+  @Middleware([updateCartItemQtyParamsValidator, updateCartItemQtyBodyValidator, checkToken])
   protected async updateCartItemQty(
-    req: Request<
-      TReqParamsUpdateCartItemQty,
-      unknown,
-      TReqBodyUpdateCartItemQty
-    >,
-    res: Response
+    req: Request<TReqParamsUpdateCartItemQty, unknown, TReqBodyUpdateCartItemQty>,
+    res: Response,
   ) {
     try {
       const userId = req.user?.id as string;
@@ -266,10 +245,7 @@ class CartsController {
 
   @Delete("cart-items/:cartItemId")
   @Middleware([deleteCartItemValidator, checkToken])
-  protected async deleteCartItem(
-    req: Request<TReqParamsDeleteCartItem>,
-    res: Response
-  ) {
+  protected async deleteCartItem(req: Request<TReqParamsDeleteCartItem>, res: Response) {
     try {
       const userId = req.user?.id as string;
       const { cartItemId } = req.params;
@@ -279,10 +255,7 @@ class CartsController {
         userId: +userId,
       };
 
-      logger.info(
-        req.params,
-        "Carts Controller - deleteCartItem with params: "
-      );
+      logger.info(req.params, "Carts Controller - deleteCartItem with params: ");
 
       const response = await CatsService.deleteCartItem(params);
 
